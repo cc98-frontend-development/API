@@ -11,14 +11,17 @@ URL: \@https://www.cc98.org/resources\@
 \code{begin}
 GET /resources HTTP/1.1
 Host: www.cc98.org
-Content-Type: application/json
+Content-Type: application/json; charset=utf-8
 
 \code{end}
 
-成功回复:
+回复:
 \code{begin}
 HTTP/1.1 200 OK
-Content-Type: application/json
+Content-Type: application/json; charset=utf-8
+Content-Lenght: XXX
+Cache-control: max-age=2592000, must-revalidate
+Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 { "resources": [
     { "link": "resources/boards", "title": "板块" },
     { "link": "resources/topics", "title": "讨论" },
@@ -28,5 +31,4 @@ Content-Type: application/json
 
 \code{end}
 
-错误回复：
 
