@@ -1,0 +1,3 @@
+[submodule "ebony"]
+	path = ebony
+	url = https://github.com/cc98-frontend-development/ebony.git
