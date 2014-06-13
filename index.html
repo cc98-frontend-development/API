@@ -1,0 +1,41 @@
+<!doctype html> 
+<html lang="zh-cn"> 
+<head> 
+<meta charset="utf-8" /> 
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+<title>API for cc98.org</title>
+<link rel="stylesheet" href="ebony/stylesheets/main_ebony.css" media="all">
+<script src="ebony/javascripts/bundle.min.js"></script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+<div id="content" class="grid">
+    <header class="row">
+        <h1>API for cc98.org</h1>
+        <hr>
+    </header>
+    
+    <div class="row">
+        <nav class="c3">
+            <ul data-bind="foreach: nav_head">
+                <li>
+                    <a href="#" data-bind="text: link_text, click: $root.update_main_view"></a>
+                    <!-- ko ifnot: child === false -->
+                    <ul class="circle" data-bind="foreach: child">
+                        <li>
+                            <a href="#" data-bind="text: link_text, click: $root.update_main_view"></a>
+                        </li>
+                    </ul>
+                    <!-- /ko -->
+                </li>
+            </ul>
+        </nav>
+        <section class="c9">
+            <p data-bind="text: message"></p>
+            <div data-bind="html: section"></div>
+        </section>
+    </div>
+</div>
+<script src="javascripts/index.min.js"></script>
+</body>
+</html>
