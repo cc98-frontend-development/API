@@ -26,7 +26,9 @@ HTTP/1.0提供的Expires机制指定了一个时间点，在这个时间点之�
 
 HTTP/1.1的Cache-control提供了非常丰富的缓存机制。
 
-寿命：由\@max-age={seconds}\@控制。
+公开性：由于API指定的数据交换基本都在HTTPS+HTTP认证下完成，默认情况下缓存均为私有缓存（浏览器缓存），而公共缓存（代理服务器缓存），需要\@public\@标注。
+
+寿命：私有缓存寿命由\@max-age={seconds}\@控制；公共缓存寿命由\@s-maxage={seconds}\@控制。
 
 是否验证：在缓存还没过期前，用户重新提交的请求，可以指定\@must-revalidate\@进行验证，正确的验证需要validator。
 
