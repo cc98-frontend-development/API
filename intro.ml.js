@@ -29,38 +29,44 @@ REST（REpresentational State Transfer）是一类基于HTTP的数据访问协�
 
 过去使用
 
-\code{begin}
+\code+[http]{begin}
 GET /adduser?name=Robert HTTP/1.1
 
-\code{end}
+\code+{end}
 
 \mark{现在使用}
 
-\code{begin}
+\code+[http]{begin}
 POST /users HTTP/1.1
 Host: myserver
 Content-Type: application/json
+\code+{end}
+
+\code+[json]{begin}
 { "user":{ "name": "Robert" }
 }
 
-\code{end}
+\code+{end}
 
 过去使用
 
-\code{begin}
+\code+[http]{begin}
 GET /updateuser?name=Robert&newname=Bob HTTP/1.1
 
-\code{end}
+\code+{end}
 
 \mark{现在使用}
 
-\code{begin}
+\code+[http]{begin}
 PUT /users/Robert HTTP/1.1
 Host: myserver
 Content-Type: application/json
+\code+{end}
+
+\code+[json]{begin}
 { "user": { "name": "Bob" }
 }
 
-\code{end}
+\code+{end}
 
 

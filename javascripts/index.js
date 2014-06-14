@@ -1,8 +1,6 @@
-var ko = require('knockout');
 var $ = require('jquery');
-var jsml = require('jsml-jquery');
-var hljs = require('highlight.js');
-var grammar = require('grammar');
+var ML = require('ML');
+var ko = require('knockout');
 require('Sammy');
 
 var nav = [
@@ -17,39 +15,17 @@ var nav = [
     }
 ]
 
-function buildErrorMessage(e){
-    return e.line !== undefined && e.column !== undefined
-        ? "Line " + e.line + ", column " + e.column + ": " + e.message
-        : e.message;
-}
-
-function get_file(url){
-    var string = $.ajax({url: url,async: false, cache: false, dataType: "text"
-    }).responseText;
-    return string;
-}
-
 function index_model( nav ) {
     var self = this;
     self.nav_head = nav;
-    self.section = ko.observable("");
-    self.message = ko.observable("");
     self.update_main_view = function(line){
         location.hash = "#/"+line["link_file"] ;
     }
 
     Sammy(function(){
         this.get('#/:link_file', function(){
-            var t = get_file(this.params['link_file']);
-            try{
-                self.message("");
-                var parsed = grammar.parse(t);
-                var html = $(document.createElement("div")).jsml(parsed).html();
-                self.section(html);
-            }catch(e)
-            {
-                self.message(buildErrorMessage(e));
-            }
+            var file = this.params['link_file'];
+            ML.render_file(file, $("#section"), $("#message"));
         });
         //default page
         this.get('', function() { this.app.runRoute('get', "#/intro.ml.js") });

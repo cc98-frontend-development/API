@@ -8,20 +8,24 @@ URL: \@https://www.cc98.org/resources\@
 
 请求:
 请求无需认证
-\code{begin}
+\code+[http]{begin}
 GET /resources HTTP/1.1
 Host: www.cc98.org
 Content-Type: application/json; charset=utf-8
 
-\code{end}
+\code+{end}
 
 回复:
-\code{begin}
+\code+[http]{begin}
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
-Content-Lenght: XXX
+Content-Length: XXX
 Cache-control: max-age=2592000, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
+
+\code+{end}
+
+\code+[json]{begin}
 { "resources": [
     { "link": "resources/boards", "title": "板块" },
     { "link": "resources/topics", "title": "讨论" },
@@ -29,6 +33,6 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
     { "link": "resources/users", "title": "用户" }
 }
 
-\code{end}
+\code+{end}
 
 

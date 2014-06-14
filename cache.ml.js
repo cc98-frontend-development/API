@@ -22,24 +22,28 @@ HTTP/1.0并没有特别好的缓存机制（只有Expires），而在HTTP/1.1，
 
 \h4{缓存机制}
 
+
 HTTP/1.0提供的Expires机制指定了一个时间点，在这个时间点之前再次访问这个资源，浏览器会假定没有变化，没有必要向服务器查询，而是直接从浏览器的缓存中返回。这种缓存机制不够精确，常常造成已经有更新却不能访问到的情况（特别是服务器端错误设置了缓存时间的时候）。本API不采用这种缓存机制。
 
 HTTP/1.1的Cache-control提供了非常丰富的缓存机制。
 
-公开性：由于API指定的数据交换基本都在HTTPS+HTTP认证下完成，默认情况下缓存均为私有缓存（浏览器缓存），而公共缓存（代理服务器缓存），需要\@public\@标注。
+\list*{
 
-寿命：私有缓存寿命由\@max-age={seconds}\@控制；公共缓存寿命由\@s-maxage={seconds}\@控制。
+\* 公开性：由于API指定的数据交换基本都在HTTPS+HTTP认证下完成，默认情况下缓存均为私有缓存（浏览器缓存），而公共缓存（代理服务器缓存），需要\@public\@标注。
 
-是否验证：在缓存还没过期前，用户重新提交的请求，可以指定\@must-revalidate\@进行验证，正确的验证需要validator。
+\* 寿命：私有缓存寿命由\@max-age={seconds}\@控制；公共缓存寿命由\@s-maxage={seconds}\@控制。
 
-validator：有两种validator\@ETag\@和\@Last-Modified\@，前者使用的是计算出来的digest，后者则是用时间戳。当用\@ETag\@时，再次访问资源时加入\@If-None-Match\@可比较前后的ETag，如果相同认为严重成功，缓存命中，服务器返回状态码\@304 Not Modified\@。同理，如果使用\@Last-Modified\@，再次访问时用\@If-Modified-Since\@进行验证。
+\* 验证：在缓存还没过期前，用户重新提交的请求，可以指定\@must-revalidate\@进行验证，正确的验证需要validator。
 
-\@no-cache\@，\@no-store\@：分别提示浏览不要缓存和不要储存，用于标识一过性的数据。
+\* validator：有两种validator\@ETag\@和\@Last-Modified\@，前者使用的是计算出来的digest，后者则是用时间戳。当用\@ETag\@时，再次访问资源时加入\@If-None-Match\@可比较前后的ETag，如果相同认为严重成功，缓存命中，服务器返回状态码\@304 Not Modified\@。同理，如果使用\@Last-Modified\@，再次访问时用\@If-Modified-Since\@进行验证。
+
+\* \@no-cache\@，\@no-store\@：分别提示浏览不要缓存和不要储存，用于标识一过性的数据。
+}
 
 \h4{举例}
 
 首次访问返回:
-\code{begin}
+\code+[http]{begin}
 
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
@@ -49,17 +53,17 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 
 data....
 
-\code{end}
+\code+{end}
 
 再次访问返回:
-\code{begin}
+\code+[http]{begin}
 
 HTTP/1.1 304 Not Modified
 Content-Type: application/json; charset=utf-8
 Cache-control: max-age=3600, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 
-\code{end}
+\code+{end}
 而没有数据返回。
 
 \hline
