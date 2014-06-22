@@ -134,7 +134,7 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
         "href": "{id}"},{
         "method": "GET",
         "rel": "icon",
-        "href": "/resources/files/icons/boards/{id}"}
+        "href": "/resources/files/icons/boards/{id}"},{
         "method": "GET",
         "rel": "stats",
         "href": "/resources/stats/boards/{id}"}
