@@ -16,14 +16,14 @@
 \code+[http]{begin}
 GET /resources/boards HTTP/1.1
 Host: api.cc98.org
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 
 \code+{end}
 
 \h6{回复}
 \code+[http]{begin}
 HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Content-Length: XXX
 Cache-control: max-age=2592000, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
@@ -59,14 +59,14 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 \code+[http]{begin}
 GET /resources/boards?parent=2 HTTP/1.1
 Host: api.cc98.org
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 
 \code+{end}
 
 \h6{回复}
 \code+[http]{begin}
 HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Content-Length: XXX
 Cache-control: max-age=2592000, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
@@ -99,14 +99,14 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 \code+[http]{begin}
 GET /resources/boards/624 HTTP/1.1
 Host: api.cc98.org
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 
 \code+{end}
 
 \h6{回复}
 \code+[http]{begin}
 HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Content-Length: XXX
 Cache-control: max-age=2592000, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
@@ -167,4 +167,4 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
         }
 }
 
-\@links\@指向了两个外部资源，分别是版面图标\@icon\@和版面统计信息、\@stats\@。
+\@links\@指向了两个外部资源，分别是版面图标\@icon\@和版面统计信息\@stats\@。

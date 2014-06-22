@@ -46,7 +46,7 @@ HTTP/1.1的Cache-control提供了非常丰富的缓存机制。
 \code+[http]{begin}
 
 HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Content-Lenght: XXX
 Cache-control: max-age=3600, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
@@ -59,7 +59,7 @@ data....
 \code+[http]{begin}
 
 HTTP/1.1 304 Not Modified
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Cache-control: max-age=3600, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 

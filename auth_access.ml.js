@@ -44,7 +44,7 @@ grant_type=password&username=johndoe&password=A3ddj3w&scope=api.cc98.org&client_
 
 \code+[http]{begin}
 HTTP/1.1 200 OK
-Content-Type: application/json;charset=UTF-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Cache-Control: no-cache, no-store
 \code+{end}
 
@@ -78,7 +78,7 @@ Cache-Control: no-cache, no-store
 
 \code+[http]{begin}
 HTTP/1.1 400 Bad Request
-Content-Type: application/json;charset=UTF-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Cache-Control: no-store
 Pragma: no-cache
 \code+{end}
@@ -96,7 +96,7 @@ Access token直接用于访问资源，仅仅需要在报头加入\@Authorizatio
 \code+[http]{begin}
 GET /some_resource HTTP 1.1
 Host: api.cc98.org
-ContentType: application/json;charset=UTF-8
+ContentType: application/json; charset=utf-8; api_version=1.0
 Authorization: Bearer 2YotnFZFEjr1zCsicMWpAA
 \code+{end}
 

@@ -12,7 +12,7 @@
 \code+[http]{begin}
 GET /resources/stats/boards HTTP/1.1
 Host: api.cc98.org
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 
 \code+{end}
 
@@ -20,7 +20,7 @@ Content-Type: application/json; charset=utf-8
 注意：缓存为30秒，无需重新验证。
 \code+[http]{begin}
 HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Content-Length: XXX
 Cache-control: max-age=30 
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
@@ -49,19 +49,21 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 
 \h5{获取某一板块}
 
+获取全站信息，则可访问根板块\@0\@的统计信息。
+
 \h6{请求}
 请求可不授权，授权后请求的处理可不相同（比如处理仅部分用户可以访问板块）
 \code+[http]{begin}
 GET /resources/stats/boards/624 HTTP/1.1
 Host: api.cc98.org
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 
 \code+{end}
 
 \h6{回复}
 \code+[http]{begin}
 HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Content-Length: XXX
 Cache-control: max-age=30
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
@@ -94,10 +96,10 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
     \* \@parent\@: 板块的母板块的\@id\@，如果是顶级板块则为\@0\@（根板块），如果是根板块则为\@null\@
     \* \@title\@: 板块名
     \* \@description\@: 板块简介
-    \* \@total_topic_count\@ 所有帖子计数
-    \* \@total_post_count\@ 所有回复计数
-    \* \@today_post_count\@ 今日回复计数
-    \* \@last_post_id\@ 最后的回复id
+    \* \@total_topic_count\@: 所有帖子计数
+    \* \@total_post_count\@: 所有回复计数
+    \* \@today_post_count\@: 今日回复计数
+    \* \@last_post_id\@: 最后的回复id
 }
 \h4{统计：其他方法}
 
@@ -105,7 +107,7 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 
 \code+[http]{begin}
 HTTP/1.1 405 Method Not Allowed
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Cache-control: no-cache, no-store 
 Allow: GET
 

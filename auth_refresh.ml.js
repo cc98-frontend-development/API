@@ -8,7 +8,7 @@ Refresh token伴随着获取access token而一同获取，参考\link+[access to
 
 \code+[http]{begin}
 HTTP/1.1 400 Bad Request
-Content-Type: application/json;charset=UTF-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Cache-Control: no-store
 Pragma: no-cache
 \code+{end}

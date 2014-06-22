@@ -10,14 +10,14 @@ URL: \@https://api.cc98.org/resources\@
 \code+[http]{begin}
 GET /resources HTTP/1.1
 Host: api.cc98.org
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 
 \code+{end}
 
 \h5{回复}
 \code+[http]{begin}
 HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Content-Length: XXX
 Cache-control: max-age=2592000, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
@@ -59,7 +59,7 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 
 \code+[http]{begin}
 HTTP/1.1 405 Method Not Allowed
-Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Cache-control: no-cache, no-store 
 Allow: GET
 
