@@ -68,7 +68,7 @@ Allow: GET
 \code+[json]{begin}
 { "error":[{
     "type": "method not allowed",
-    "message": "不支持使用{method}访问资源{id}"
+    "message": "不支持使用{method}访问资源{id}"}]
 }
 
 \code+{end}

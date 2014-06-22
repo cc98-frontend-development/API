@@ -133,6 +133,9 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
         "rel": "self",
         "href": "{id}"},{
         "method": "GET",
+        "rel": "icon",
+        "href": "/resources/files/icons/boards/{id}"}
+        "method": "GET",
         "rel": "stats",
         "href": "/resources/stats/boards/{id}"}
     ]
@@ -149,6 +152,7 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
     \* \@description\@: 板块简介
     \* \@manager\@: 一数组，该版面负责人，每项为指向用户资源的链接
     \* \@anonymous\@: 是否为匿名板块，\@true\@ or \@false\@
+    \* \@forbid_rpvn\@: 是否禁止特殊IP发言\@true\@ or \@false\@
     \* \@poster_only_setting\@: 该版“仅楼主可见”功能设置，可能的值为：\list*{
             \* \@off\@: 该功能被禁用
             \* \@stop\@: 该功能被停用，不能设置新的仅楼主可见，但过去的设置依然有效
@@ -161,6 +165,6 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
             \* \@admin_only\@: 该功能仅有管理权限的用户可使用
             \* \@on\@: 该功能完全开放，任何人都可使用
         }
-
-
 }
+
+\@links\@指向了两个外部资源，分别是版面图标\@icon\@和版面统计信息、\@stats\@。
