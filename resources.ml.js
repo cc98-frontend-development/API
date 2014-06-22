@@ -1,7 +1,7 @@
 \h3{资源}
 
 所有论坛资源的入口：
-URL: \@https://www.cc98.org/resources\@
+URL: \@https://api.cc98.org/resources\@
 
 \h4{读取资源列表：GET} 
 
@@ -9,7 +9,7 @@ URL: \@https://www.cc98.org/resources\@
 请求无需授权，授权后和无授权下的请求处理相同。
 \code+[http]{begin}
 GET /resources HTTP/1.1
-Host: www.cc98.org
+Host: api.cc98.org
 Content-Type: application/json; charset=utf-8
 
 \code+{end}

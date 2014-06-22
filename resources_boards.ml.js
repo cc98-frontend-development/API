@@ -15,7 +15,7 @@
 请求可不授权，授权后请求的处理可不相同（比如处理仅部分用户可以访问板块）
 \code+[http]{begin}
 GET /resources/boards HTTP/1.1
-Host: www.cc98.org
+Host: api.cc98.org
 Content-Type: application/json; charset=utf-8
 
 \code+{end}
@@ -57,7 +57,7 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 请求可不授权，授权后请求的处理可不相同（比如处理仅部分用户可以访问板块）
 \code+[http]{begin}
 GET /resources/boards?parent=2 HTTP/1.1
-Host: www.cc98.org
+Host: api.cc98.org
 Content-Type: application/json; charset=utf-8
 
 \code+{end}
@@ -96,7 +96,7 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 请求可不授权，授权后请求的处理可不相同（比如处理仅部分用户可以访问板块）
 \code+[http]{begin}
 GET /resources/boards/624 HTTP/1.1
-Host: www.cc98.org
+Host: api.cc98.org
 Content-Type: application/json; charset=utf-8
 
 \code+{end}
