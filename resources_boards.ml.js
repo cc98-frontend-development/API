@@ -43,8 +43,9 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
     "links": [{
         "method": "GET",
         "rel": "self",
-        "href": "{id}" /*i.e."/resources/boards"*/
+        "href": "{id}"
     }]
+    }
 }
 
 \code+{end}
@@ -86,6 +87,7 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
         "rel": "self",
         "href": "{id}"
     }]
+    }
 }
 
 \code+{end}
@@ -133,7 +135,8 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
         "method": "GET",
         "rel": "stats",
         "href": "/resources/stats/boards/{id}"}
-    }]
+    ]
+    }
 }
 
 \code+{end}
