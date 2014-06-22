@@ -13,7 +13,7 @@ API提供了一个数据接口，为网页客户端和服务器端通讯的协�
 
 \h3{REST}
 
-REST（REpresentational State Transfer）是一类基于HTTP的数据访问协议，它可以充分利用HTTP提供的机制交换数据，简化了前端和后端的设计。
+REST（REpresentational State Transfer）是一类基于HTTP的数据访问协议，它可以充分利用HTTP提供的机制交换数据，简化了前端和后端的设计。REST的最初定义：\link+[Architectural Styles and the Design of Network-based Software Architectures]{http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm}
 
 主要特点如下：
 
@@ -69,4 +69,26 @@ Content-Type: application/json
 
 \code+{end}
 
+\h4{REST的核心概念：资源}
 
+任意可以被命名的信息都被视为是资源：文档或图片，服务，其他资源的集合…
+
+\bq{begin}
+A resource is a conceptual mapping to a set of entities, not the entity that corresponds to the mapping at any particular point in time.
+
+\bq{end}
+
+这一概念的映射（资源）可以指向一个空集，或者多个资源指向同一个实体，比如说：“最新版”，“版本号：1.2.7”，可以指向同一个实体，但确实两个不同的资源，他们仅仅是因为在特定的时间上的表现为同一个实体。
+
+区别资源的是语义上的概念，这个是不变的，而他们所指向的实体却可是随时间变化。
+
+\h4{REST的核心概念：表现}
+
+REST通过“表现”去表达资源的现在状态或者期望状态，通过在不同组件间传递“表现”去操作资源。
+
+\bq{begin}
+A representation is a sequence of bytes, plus representation metadata to describe those bytes.
+
+\bq{end}
+
+表现由数据（data）和描述数据的元数据（metadata）组成，有时还有描述元数据的元数据。元数据又可以进一部分为表现元数据（描述表现，如媒体类型），资源元数据（描述资源，如来源）。而控制数据则是用于描述如何操作表现的。
