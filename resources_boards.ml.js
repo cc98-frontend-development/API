@@ -48,7 +48,7 @@ Content-Length: 0
 Cache-control: max-age=2592000, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 Allow: OPTIONS, GET, POST, POST, DELETE, PATCH
-Link: </resources/boards/624>; rel="self"; method="GET", </resources/stats/boards/297>; rel="stats"; method="GET", </resources/boards/297>; rel="prev"; method="GET", </resources/boards/412>; rel="next"; method="GET"
+Link: </resources/boards/624>; rel="self"; method="GET", </resources/stats/boards/624>; rel="stats"; method="GET"
 \code+{end}
 
 \h4{获取板块：GET}

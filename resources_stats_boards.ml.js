@@ -143,20 +143,3 @@ Link: </resources/stats/boards/624>; rel="self"
     \* \@last_post_id\@: 最后的回复id
 }
 
-\h4{统计：其他方法}
-
-不允许用其他方法访问统计资源，如果使用其他方法访问，应回复：
-
-\code+[http]{begin}
-HTTP/1.1 405 Method Not Allowed
-Content-Type: application/json; charset=utf-8; api_version=1.0
-Cache-control: no-cache, no-store 
-Allow: OPTIONS, GET
-\code+{end}
-
-\code+[json]{begin}
-{ "error":[{
-    "type": "method not allowed",
-    "message": "不支持使用{method}访问资源{id}"}]
-}
-\code+{end}

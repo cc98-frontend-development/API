@@ -73,7 +73,7 @@ Cache-Control: no-cache, no-store
             \* \@invalid_scope\@：错误的scope
         }
     \* \@error_description\@：必须（OAuth2可选），human-readable ASCII字符，进一步描述错误类型，用于记录日志和开发调试用。
-    \* \@error_uri\@：必须（OAuth2可选），包含用户可读错误信息的页面地址，改页面内\emphasis{应该}包括引导用户完成正确授权的内容。
+    \* \@error_uri\@：必须（OAuth2可选），包含用户可读错误信息的页面地址，该页面内\emphasis{应该}包括引导用户完成正确授权的内容。
 }
 
 \code+[http]{begin}
@@ -108,3 +108,47 @@ Authorization: Bearer 2YotnFZFEjr1zCsicMWpAA
 }
 
 错误回复参照上文。
+
+\h3{未授权和授权禁止}
+
+报头中没有\@Authorization Bearer {access_token}\@，则为未授权的访问，有些资源可以未授权访问，但遇到需要授权才可访问的情况，应回复：
+
+\code+[http]{begin}
+HTTP/1.1 401 Unauthorized
+Content-Type: application/json; charset=utf-8; api_version=1.0
+Content-Length: XXX
+Cache-control: no-cache, no-store 
+\code+{end}
+
+\code+[json]{begin}
+{ "error":[{
+    "type": "need authorization",
+    "message": "访问资源{id}需要授权",
+    "info":{"href":"www.cc98.org/login.html", "from":"{id}"}
+    }]
+}
+\code+{end}
+
+其中，\@info\@中的\@href\@引导客户端跳转到登页面获得授权，\@from\@指向的页面用于获得授权后跳回。
+
+授权用户如果无权访问某资源，应当回复：
+
+\code+[http]{begin}
+HTTP/1.1 403 Forbidden
+Content-Type: application/json; charset=utf-8; api_version=1.0
+Content-Length: XXX
+Cache-control: no-cache, no-store 
+\code+{end}
+
+\code+[json]{begin}
+{ "error":[{
+    "type": "access forbidden",
+    "message": "您无权访问资源{id}",
+    "info":{"href":"{page}" }
+    }]
+}
+\code+{end}
+
+其中，\@info\@中的\@href\@引导客户端跳转到有权访问的最近的页面。
+
+

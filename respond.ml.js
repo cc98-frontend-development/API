@@ -8,7 +8,8 @@
     \* 内容长度\@Content-Length\@，可以帮助浏览器减少连接开销。
     \* 缓存策略\@Cache-control\@。
     \* validator，与缓存的验证有关的信息\@Last-Modified\@、\@ETag\@。
-    \* \@Date\@。
+    \* \@Date\@，永远帮助客户端正确处理缓存。
+    \* 限速状态：\@X-Ratelimit-Limit\@和\@X-Ratelimit-Remaining\@。
 }
 
 \h4{HTTP 状态码}
@@ -37,7 +38,9 @@ HTTP 状态码在\link+[RFC2612的第10节]{http://www.w3.org/Protocols/rfc2616/
 
 \@406 Not Acceptable\@：服务器不能提供请求所需要的内容类型，由于本API已经规定了请求的内容类型，这个状态码的产生可能是由于客户端请求了错误的内容类型，或者服务器端没有正确的产生内容类型。
 
-\@429 Too Many Request\@：请求过于频繁，超过超过服务器的限速要求。返回的报头应该包括\@X-Ratelimit-Limit\@和\@X-Ratelimit-Remaining\@，具体参考：\link+[限速]{#/ratelimit.ml.js}。
+\@415 Unsupported Media Type\@：服务器不支持使用请求的媒体类型，或者请求的内容实体不符合请求的媒体类型。
+
+\@429 Too Many Request\@：请求过于频繁，超过超过服务器的限速要求。具体参考：\link+[限速]{#/ratelimit.ml.js}。
 
 \@500 Internal Server Error\@：服务器由于意外的原因发生错误。
 

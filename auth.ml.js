@@ -1,6 +1,6 @@
 \h3{授权}
 
-API的授权使用\link+[OAuth2]{http://oauth.net/2/}。
+API的授权使用\link+[OAuth2]{http://oauth.net/2/}，其请求和回复的定义与API的其他部分略有不同。
 
 网站的授权采用\link+[Resource Owner Password Credentials Grant]{http://tools.ietf.org/html/rfc6749#section-4.3}。第一版API中暂不支持第三方应用授权。
 第三方应用采用\link+[Authorization Code Grant]{http://tools.ietf.org/html/rfc6749#section-4.1}，将在第二版API中实现。

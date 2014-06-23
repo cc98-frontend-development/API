@@ -70,23 +70,3 @@ Link: </resources>; rel="self"; method="GET"
 
 上面的json代码表示的resources资源是源资源（\@id\@与\@source\@相同），它表现为在\@collection\@中，包括了一系列子资源的链接（\@"rel":"link"\@），链接的具体指向（e.g.\@"href":"/resources/boards"\@），子资源的人类可读的表示（e.g.\@"title":"板块"\@）。
 
-\h4{其他方法}
-
-不允许用其他方法访问论坛资源入口，如果使用其他方法访问，应回复：
-
-\code+[http]{begin}
-HTTP/1.1 405 Method Not Allowed
-Content-Type: application/json; charset=utf-8; api_version=1.0
-Cache-control: no-cache, no-store 
-Allow: OPTIONS, GET
-
-\code+{end}
-
-\code+[json]{begin}
-{ "error":[{
-    "type": "method not allowed",
-    "message": "不支持使用{method}访问资源{id}"}]
-}
-
-\code+{end}
-
