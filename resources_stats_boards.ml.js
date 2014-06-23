@@ -137,9 +137,11 @@ Link: </resources/stats/boards/624>; rel="self"
     \* \@parent\@: 板块的母板块的\@id\@，如果是顶级板块则为\@0\@（根板块），如果是根板块则为\@null\@
     \* \@title\@: 板块名
     \* \@description\@: 板块简介
-    \* \@total_topic_count\@: 所有帖子计数
+    \* \@total_thread_count\@: 所有讨论帖计数
+    \* \@today_thread_count\@: 今日讨论帖计数
     \* \@total_post_count\@: 所有回复计数
     \* \@today_post_count\@: 今日回复计数
-    \* \@last_post_id\@: 最后的回复id
+    \* \@last_thread_id\@: 最新的讨论帖id
+    \* \@last_post_id\@: 最新的回复id
 }
 
