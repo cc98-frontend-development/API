@@ -3,6 +3,27 @@
 所有论坛资源的入口：
 URL: \@https://api.cc98.org/resources\@
 
+\h4{资源访问方法：OPTIONS} 
+\h5{请求}
+\code+[http]{begin}
+OPTIONS /resources HTTP/1.1
+Host: api.cc98.org
+Content-Type: application/json; charset=utf-8; api_version=1.0
+
+\code+{end}
+
+\h5{回复}
+\code+[http]{begin}
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8; api_version=1.0
+Content-Length: 0
+Cache-control: max-age=2592000, must-revalidate
+Last-Modified: Mon, 06 May 2013 06:12:57 GMT
+Allow: OPTIONS, GET
+Link: </resources>; rel="self"; method="GET"
+
+\code+{end}
+
 \h4{读取资源列表：GET} 
 
 \h5{请求}
@@ -21,6 +42,7 @@ Content-Type: application/json; charset=utf-8; api_version=1.0
 Content-Length: XXX
 Cache-control: max-age=2592000, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
+Link: </resources>; rel="self"; method="GET"
 
 \code+{end}
 
@@ -33,14 +55,9 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
         { "rel": "link", "href": "/resources/users", "title": "用户" },
         { "rel": "link", "href": "/resources/files", "title": "文件" },
         { "rel": "link", "href": "/resources/stats", "title": "统计" }],
-    "parent": null,
     "id": "/resources",
     "source": "/resources"
-    "links": [{
-        "method": "GET",
-        "rel": "self",
-        "href": "{id}" /*i.e."/resources"*/
-    }]
+    }
 }
 
 \code+{end}
@@ -61,7 +78,7 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 HTTP/1.1 405 Method Not Allowed
 Content-Type: application/json; charset=utf-8; api_version=1.0
 Cache-control: no-cache, no-store 
-Allow: GET
+Allow: OPTIONS, GET
 
 \code+{end}
 
@@ -72,5 +89,4 @@ Allow: GET
 }
 
 \code+{end}
-
 
