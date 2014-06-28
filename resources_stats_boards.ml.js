@@ -72,7 +72,7 @@ Content-Type: application/json; charset=utf-8; api_version=1.0
 Content-Length: XXX
 Cache-control: max-age=2592000, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
-Link: </resources/stats/boards>; rel="self"
+Link: </resources/stats/boards>; rel="self"; method="GET"
 \code+{end}
 
 \code+[json]{begin}
@@ -105,15 +105,15 @@ Content-Type: application/json; charset=utf-8; api_version=1.0
 
 \h6{回复}
 
-注意：缓存为30秒，无需重新验证。
+注意：缓存为300秒，无需重新验证。
 
 \code+[http]{begin}
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8; api_version=1.0
 Content-Length: XXX
-Cache-control: max-age=30
+Cache-control: max-age=300
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
-Link: </resources/stats/boards/624>; rel="self"
+Link: </resources/stats/boards/624>; rel="self"; method="GET"
 \code+{end}
 
 \code+[json]{begin}
