@@ -1,7 +1,7 @@
 \h3{oplist}
 
 Oplist是关于operation的权限列表，也是一种资源，通过\@resources/oplist\@访问。
-Oplist修改的修改权限是有层级的，即版面oplist的修改权限属于上一层版块，若上层为null（版块id为0的根版块，即全站）的oplist只能通过API读取，而不能修改。
+访问Oplist的权限是有层级的，即记录版块oplist的oplist属于上一层版块，若上层为null（版块id为0的根版块，即全站）的oplist只能通过API读取，而不能修改（oplist后台写死）。
 
 
 \h4{语法定义}

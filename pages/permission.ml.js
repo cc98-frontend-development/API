@@ -11,7 +11,7 @@
 Access token是已经认证用户的临时访问凭证，它在特定的时间段内代表了用户。Access token的检查主要包括：
 
 \list#{
-    \* access token对应的用户id。
+    \* access token对应的用户id，及其访问用的client_id（目前仅仅支持\@cc98web\@）。
     \* access token是否有效：当前时间access token是否可用，如果已经过期，则使用refresh token生成新的access token；如果失效，则提示重新认证授权。 \link+[参考]{#/auth.ml.js}
 }
 
@@ -41,3 +41,16 @@ Oplist的详细内容在\link+[这里]{#/permission_oplist.ml.js}给出。
 
 \h5{proxy_operator}
 有些时候必要的操作需要某些具有特权的“公共操作者”，而不是以普通用户的名义，这样的操作由代理操作者(proxy_operator)完成。表示为\@proxy_operator(operator)\@，即operator以proxy_operator的身份完成。
+
+\h4{权限检查的步骤（后端完成）}
+
+\list#{
+    \* access token检查，返回client_id和user_id，若失败，向前端返回错误
+    \* 访问对应的oplist，根据op，operator(user_id和client_id)和operand进行权限检查，返回是否允许操作，若拒绝操作，向前端返回错误
+}
+
+如果权限检查通过，则后端执行这个operation，并记录这个operation，根据结果向前端返回。
+
+记录格式，如：
+\@[client_id] proxy(user@group): op(operand)\@
+
