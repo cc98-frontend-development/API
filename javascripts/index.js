@@ -22,6 +22,11 @@ var nav = [
         child:[
         {link_text: "access token", link_file:"auth_access.ml.js"},
         {link_text: "refresh token", link_file:"auth_refresh.ml.js"}]
+    },
+    { link_text: "权限", link_file:"permission.ml.js",
+        child:[
+        {link_text: "oplist规则", link_file:"permission_oplist.ml.js"}
+        ]
     }
 ]
 
