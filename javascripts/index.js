@@ -34,7 +34,7 @@ function index_model( nav ) {
 
     Sammy(function(){
         this.get('#/:link_file', function(){
-            var file = this.params['link_file'];
+            var file = "pages/" + this.params['link_file'];
             ML.render_file(file, $("#section"), $("#message"));
         });
         //default page
