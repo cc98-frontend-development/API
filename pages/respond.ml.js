@@ -62,7 +62,7 @@ HTTP 状态码在\link+[RFC2612的第10节]{http://www.w3.org/Protocols/rfc2616/
 
 \@201 Created\@：表示资源成功被创建，回复的报头里\emphasis{应该}包括\@Location\@指出新资源的URI。
 
-\@411 Length Required\@：需要客户端提供\@Content-Lenght\@报头。
+\@411 Length Required\@：需要客户端提供\@Content-Length\@报头。
 
 \@413 Request Entity Too Large\@：请求的内容过大，比如说用户企图上传大于限制的文件。
 
@@ -70,7 +70,7 @@ HTTP 状态码在\link+[RFC2612的第10节]{http://www.w3.org/Protocols/rfc2616/
 
 \@204 No Content\@：表示资源被成功修改，没有内容返回。
 
-\@411 Length Required\@：需要客户端提供\@Content-Lenght\@报头。
+\@411 Length Required\@：需要客户端提供\@Content-Length\@报头。
 
 \@413 Request Entity Too Large\@：请求的内容过大，比如说用户企图上传大于限制的文件。
 

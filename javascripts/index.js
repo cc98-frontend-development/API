@@ -25,7 +25,8 @@ var nav = [
     },
     { link_text: "权限", link_file:"permission.ml.js",
         child:[
-        {link_text: "oplist规则", link_file:"permission_oplist.ml.js"}
+        {link_text: "oplist规则", link_file:"permission_oplist.ml.js"},
+        {link_text: "resources/oplists/boards", link_file:"resources_oplists_boards.ml.js"}
         ]
     }
 ]

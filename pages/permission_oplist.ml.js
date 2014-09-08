@@ -52,7 +52,7 @@ op1:@user
 
 完整语法定义为（in \link+[PEG.js]{http://pegjs.majda.cz/}）：
 
-\code{begin}
+\code+[haskell]{begin}
 
 Oplist
  = Items
@@ -94,5 +94,5 @@ NL = "\r\n" / "\n"
 Sp = Sp_char+
 
 Sp_char = "\t" / " "
-\code{end}
+\code+{end}
 

@@ -36,7 +36,7 @@ Pragma: no-cache
 \code+[http]{begin}
 POST /token HTTP/1.1
 Host: auth.cc98.org
-ContentType: application/x-www-form-urlencoded
+Content-Type: application/x-www-form-urlencoded
 \code+{end}
 
 \code+[http]{begin}

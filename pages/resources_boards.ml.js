@@ -47,7 +47,7 @@ Content-Type: application/json; charset=utf-8; api_version=1.0
 Content-Length: 0
 Cache-control: max-age=2592000, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
-Allow: OPTIONS, GET, POST, POST, DELETE, PATCH
+Allow: OPTIONS, GET, PUT, POST, DELETE, PATCH
 Link: </resources/boards/624>; rel="self"; method="GET", </resources/stats/boards/624>; rel="stats"; method="GET"
 \code+{end}
 
@@ -159,10 +159,10 @@ Link: </resources/boards/624>; rel="self"; method="GET", </resources/stats/board
         "parent": "2",
         "title": "计算机类通识课程答疑版",
         "description":"主要面向大一学生，课程包含：大学计算机基础、C/C++语言、JAVA、VB语言等通识课程",
-        "manager":[{
-            "rel":"link", "href": "/resources/users/1641231", "title":"chenjh919"},{
-            "rel":"link", "href": "/resources/users/1342331", "title":"jijm"},{
-            "rel":"link", "href": "/resources/users/1442852", "title":"luhq"},...],
+        "proxy_group":[{
+            "rel":"link", "href": "/resources/users/group/231", "title":"admin"}, {
+            "rel":"link", "href": "/resources/users/group/11", "title":"whole site no post"}, {
+            "rel":"link", "href": "/resources/users/group/181", "title":"no post"}...]
         ...},
     "id": "/resources/boards/624",
     "source": "/resources/boards/624"
@@ -176,21 +176,8 @@ Link: </resources/boards/624>; rel="self"; method="GET", </resources/stats/board
     \* \@parent\@: 板块的母板块的\@id\@，如果是顶级板块则为\@0\@（根板块），如果是根板块则为\@null\@
     \* \@title\@: 板块名
     \* \@description\@: 板块简介
-    \* \@manager\@: 一数组，该版面负责人，每项为指向用户资源的链接
     \* \@anonymous\@: 是否为匿名板块，\@true\@ or \@false\@
-    \* \@forbid_rpvn\@: 是否禁止特殊IP发言\@true\@ or \@false\@
-    \* \@poster_only_setting\@: 该版“仅楼主可见”功能设置，可能的值为：\list*{
-            \* \@off\@: 该功能被禁用
-            \* \@stop\@: 该功能被停用，不能设置新的仅楼主可见，但过去的设置依然有效
-            \* \@admin_only\@: 该功能仅有管理权限的用户可使用
-            \* \@on\@: 该功能完全开放，任何人都可使用
-        }
-    \* \@viewer_filter_setting\@: 该版“特定用户可见”功能设置，可能的值为：\list*{
-            \* \@off\@: 该功能被禁用
-            \* \@stop\@: 该功能被停用，不能设置新的特定用户可见，但过去的设置依然有效
-            \* \@admin_only\@: 该功能仅有管理权限的用户可使用
-            \* \@on\@: 该功能完全开放，任何人都可使用
-        }
+    \* \@proxy_group\@: 一数组，为指向该版块的代理用户组链接
 }
 
-报头中的\@Link\@指向外部资源，版面统计信息\@stats\@。
+报头中的\@Link\@指向外部资源，版块统计信息\@stats\@。

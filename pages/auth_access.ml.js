@@ -15,7 +15,7 @@
 \code+[http]{begin}
 POST /token HTTP 1.1
 Host: auth.cc98.org
-ContentType: application/x-www-form-urlencoded
+Content-Type: application/x-www-form-urlencoded
 \code+{end}
 
 \code+[http]{begin}
@@ -96,7 +96,7 @@ Access token直接用于访问资源，仅仅需要在报头加入\@Authorizatio
 \code+[http]{begin}
 GET /some_resource HTTP 1.1
 Host: api.cc98.org
-ContentType: application/json; charset=utf-8; api_version=1.0
+Content-Type: application/json; charset=utf-8; api_version=1.0
 Authorization: Bearer 2YotnFZFEjr1zCsicMWpAA
 \code+{end}
 
