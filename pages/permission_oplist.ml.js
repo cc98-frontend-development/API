@@ -96,7 +96,7 @@ Proxy_name = "$" Normal_char+
 
 Client = "cc98web"
 
-Normal_char = !("["/"]"/"@"/"$"/"!"/Sp_char/NL) .
+Normal_char = !("("/")"/"["/"]"/"@"/"$"/"!"/Sp_char/NL) .
 
 isEof = !.
 
