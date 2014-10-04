@@ -47,7 +47,7 @@ HTTP/1.1的Cache-control提供了非常丰富的缓存机制。
 
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8; api_version=1.0
-Content-Lenght: XXX
+Content-Length: XXX
 Cache-control: max-age=3600, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 
@@ -70,12 +70,12 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 
 前端缓存的基本假设是，如果用户访问（读）了这个资源，那么他最近还会访问这资源，但不一定要求看到的资源是最最新的（可以适当容忍非最新资源）。
 
-由于API使用了RESTful协议，最大程度第利用多级缓存，在设计资源时，也根据各种资源可能的修改频率进行了分割。数据根据缓存要求可分为以下几类:
+由于API使用了RESTful协议，最大程度地利用多级缓存，在设计资源时，也根据各种资源可能的修改频率进行了分割。数据根据缓存要求可分为以下几类:
 
 \table{begin}
 \r{ \h 读的频率\newline
     (cache hit rate) \h 写的频率\newline
-    (latence tolerace) \h 例子 \h 缓存策略 }
+    (latency tolerance) \h 例子 \h 缓存策略 }
 \r{ \d 高   \d 低 \d 发表的回复 \d 长过期时间（天），总是验证 }
 \r{ \d 高   \d 高 \d 最新回复   \d 短过期时间（秒），不验证 }
 \r{ \d 低   \d 高 \d 默认不显示的统计信息   \d 中等过期时间（分），不验证 }
