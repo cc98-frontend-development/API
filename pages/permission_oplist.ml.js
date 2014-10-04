@@ -1,10 +1,11 @@
 \h3{oplist}
 
 Oplist是关于operation的权限列表，也是一种资源，通过\@resources/oplist\@访问。
-访问Oplist的权限是有层级的，即记录版块oplist的oplist属于上一层版块，若上层为null（版块id为0的根版块，即全站）的oplist只能通过API读取，而不能修改（oplist后台写死）。
+
+Oplist是有层级的，最上层的oplist只能后台修改，API层面只读。
 
 
-\h4{语法定义}
+\h4{oplist 的表示语法定义}
 例子：
 \code{begin}
 op1: [cc98web] user

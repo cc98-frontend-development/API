@@ -21,10 +21,10 @@ Operation是用户对资源读写操作的一种抽象，它包括了三部分�
 
 例如：用户读取某一讨论的资源，可以表述为 \@user_id: read_thread(thread_id, ...)\@ 这样一个operation。其中\@user_id\@是operator，\@(thread_id, ...)\@是operand，而\@read_thread\@则是一个op。
 
-Operand是执行op所需要的所有对象，包括了资源标识（比如例子中的\@thread_id\@）和其他需要的信息。operand的解读对于每个op来说都不同：如果把op看成函数，则operand就是它的参数。
+Operand是执行op所需要的所有对象，包括了资源标识（比如例子中的\@thread_id\@）和其他需要的信息。operand的解读对于不同的op来说是不同的：如果把op看成函数名，则operand是函数的参数。
 
 \h5{oplist}
-Oplist是关于资源的所允许的operation的列表，其自身的存在是一种operand->op的映射，而其中的内容则是oprand->operator的映射。
+Oplist是关于某资源的所允许的operation的列表，其自身的存在是一种operand->op的映射，而其中的内容则是oprand->operator的映射。
 
 例如某一个thread的oplist部分内容如下：
 \code{begin}
@@ -53,4 +53,11 @@ Oplist的详细内容在\link+[这里]{#/permission_oplist.ml.js}给出。
 
 记录格式，如：
 \@[client_id] proxy(user@group): op(operand)\@
+
+\h5{oplist与其他资源的关系}
+对于oplist的修改也需要定义权限，这部分的权限的定义在另一个oplist中，即oplist of oplist。
+
+定义权限的oplist是一类独立的资源，每个oplist资源有一个父资源（oplist），最高层次的oplist没有父资源，关于它的权限只能后台改动，API层面只读。
+
+有子资源的资源，都有个指向有子资源的默认oplist的链接，除非另外定义，其子资源访问权限由同一个默认oplist提供；当其中某个子资源的访问权限改动的时候（即不使用默认的oplist时），才为此子资源生成一个新的oplist，其他子资源依然共享默认oplist定义的权限；删除子资源对应的oplist操作，实质是把子资源的oplist重新设为默认资源。
 
