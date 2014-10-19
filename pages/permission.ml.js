@@ -61,3 +61,7 @@ Oplist的详细内容在\link+[这里]{#/permission_oplist.ml.js}给出。
 
 有子资源的资源，都有个指向有子资源的默认oplist的链接，除非另外定义，其子资源访问权限由同一个默认oplist提供；当其中某个子资源的访问权限改动的时候（即不使用默认的oplist时），才为此子资源生成一个新的oplist，其他子资源依然共享默认oplist定义的权限；删除子资源对应的oplist操作，实质是把子资源的oplist重新设为默认资源。
 
+\fig.{begin}
+普通资源和oplist资源关系总图
+\img{pages/graph/resources.png}
+\fig.{end}

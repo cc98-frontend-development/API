@@ -1,0 +1,89 @@
+strict digraph g {
+	rankdir = RL;
+	nodesep = 0.5;
+	ranksep = 1;
+	node [shape = record];
+
+	subgraph cluster_0 {
+		node_root_board [ label = "BOARD (root, static) | <f0> parent = null | <f1> oplist | <f2> default oplist: board | <f3> default oplist: thread | <f4> default oplist: post |... " ]
+		node_board1 [ label = "BOARD (section) | <f0> parent = 0 | <f1> oplist | <f2> default oplist: board | <f3> default oplist: thread | <f4> default oplist: post | ..." ]
+		node_board0 [ label = "BOARD | <f0> parent | <f1> oplist | <f2> default oplist: board | <f3> default oplist: thread | <f4> default oplist: post | ... "];
+	}
+
+	subgraph cluster_1 {
+		node_thread [ label = "THREAD |<f0> parent | <f1> oplist | <f2> default oplist: post ... "];
+	}
+
+	subgraph cluster_2 {
+		node_post0 [ label = "POST (first post) | <f0> parent | <f1> oplist | <f2> reply_to |..."];
+		node_post1 [ label = "POST (reply to first)| <f0> parent | <f1> oplist | <f2> reply_to |..."];
+		node_post2 [ label = "POST (reply to some)| <f0> parent | <f1> oplist | <f2> reply_to |..."];
+	}
+
+	subgraph cluster_3 {
+		node_oplist_post_d [ label = "OPLIST (post, default) | <f0> oplist | <f1> default | ... "];
+		node_oplist_post [ label = "OPLIST (post, special) | <f0> oplist | <f1> default | ... "];
+	}
+
+	subgraph cluster_4 {
+		node_oplist_thread_d [ label = "OPLIST (thread, default) | <f0> oplist | <f1> default | ... "];
+		node_oplist_thread [ label = "OPLIST (thread, special) | <f0> oplist | <f1> default | ... "];
+	}
+
+	subgraph cluster_5 {
+		node_oplist_board_d [ label = "OPLIST (board, default) | <f0> oplist | <f1> default | ... "];
+		node_oplist_board0 [ label = "OPLIST (board, special) | <f0> oplist | <f1> default | ... "];
+		node_oplist_board1 [ label = "OPLIST (board(section), special) | <f0> oplist | <f1> default | ... "];
+		node_oplist_root_board [ label = "OPLIST (board, root, static) | <f0> oplist = null| <f1> default | ... "];
+	}
+
+	node_root_board:f1 -> node_oplist_root_board;
+	node_root_board:f2 -> node_oplist_board_d;
+
+	node_board1:f0 -> node_root_board;
+	node_board1:f1 -> node_oplist_board1;
+	node_board1:f2 -> node_oplist_board0;
+
+	node_board0:f0 -> node_board1;
+	node_board0:f2 -> node_oplist_board0;
+	node_board0:f3 -> node_oplist_thread_d;
+	node_board0:f4 -> node_oplist_post_d;
+
+	node_thread:f0 -> node_board0;
+	node_thread:f1 -> node_oplist_thread_d;
+	node_thread:f2 -> node_oplist_post_d;
+	
+	node_post0:f0 -> node_thread;
+	node_post0:f1 -> node_oplist_post_d;
+	node_post0:f2 -> node_post0 [constraint = false];
+
+	node_post1:f0 -> node_thread;
+	node_post1:f1 -> node_oplist_post_d;
+	node_post1:f2 -> node_post0 [constraint = false];
+
+	node_post2:f0 -> node_thread;
+	node_post2:f1 -> node_oplist_post;
+	node_post2:f2 -> node_post1 [constraint = false];
+
+	node_oplist_post_d:f0 -> node_oplist_thread_d;
+	node_oplist_post_d:f1 -> node_oplist_post_d [constraint = false];
+
+	node_oplist_post:f0 -> node_oplist_thread_d;
+	node_oplist_post:f1 -> node_oplist_post_d [constraint = false];
+
+	node_oplist_thread_d:f0 -> node_oplist_board_d;
+	node_oplist_thread_d:f1 -> node_oplist_thread_d [constraint = false];
+
+	node_oplist_thread:f0 -> node_oplist_board_d;
+	node_oplist_thread:f1 -> node_oplist_thread_d [constraint = false];
+
+	node_oplist_board_d:f0 -> node_oplist_board1;
+	node_oplist_board_d:f1 -> node_oplist_board_d [constraint = false];
+
+	node_oplist_board0:f0 -> node_oplist_board1;
+	node_oplist_board0:f1 -> node_oplist_board_d [constraint = false];
+
+	node_oplist_board1:f0 -> node_oplist_root_board;
+
+}
+
