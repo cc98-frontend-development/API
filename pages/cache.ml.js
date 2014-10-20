@@ -29,13 +29,13 @@ HTTP/1.1的Cache-control提供了非常丰富的缓存机制。
 
 \list*{
 
-\* 公开性：由于API指定的数据交换基本都在HTTPS+HTTP认证下完成，默认情况下缓存均为私有缓存（浏览器缓存），而公共缓存（代理服务器缓存），需要\@public\@标注。
+\* 公开性：公共缓存由\@public\@标注，由于本API指定的数据交换基本都在HTTPS+HTTP认证下完成，默认情况下缓存均为私有缓存（浏览器缓存），而公共缓存（代理服务器缓存）。
 
 \* 寿命：私有缓存寿命由\@max-age={seconds}\@控制；公共缓存寿命由\@s-maxage={seconds}\@控制。
 
-\* 验证：在缓存还没过期前，用户重新提交的请求，可以指定\@must-revalidate\@进行验证，正确的验证需要validator。
+\* 验证：在缓存还没过期前，用户重新提交的请求，可以指定\@must-revalidate\@进行验证，正确的验证需要validator，验证成功时不需要传输完整的数据。
 
-\* validator：有两种validator\@ETag\@和\@Last-Modified\@，前者使用的是计算出来的digest，后者则是用时间戳。当用\@ETag\@时，再次访问资源时加入\@If-None-Match\@可比较前后的ETag，如果相同认为严重成功，缓存命中，服务器返回状态码\@304 Not Modified\@。同理，如果使用\@Last-Modified\@，再次访问时用\@If-Modified-Since\@进行验证。
+\* validator：有两种validator\@ETag\@和\@Last-Modified\@，前者使用的是计算出来的digest，后者则是用时间戳。当用\@ETag\@时，再次访问资源时加入\@If-None-Match\@可比较前后的ETag，如果相同认为验证成功，缓存命中，服务器返回状态码\@304 Not Modified\@。同理，如果使用\@Last-Modified\@，再次访问时用\@If-Modified-Since\@进行验证。\@ETag\@直接表征内容的版本，验证能力较强，而\@Last-Modified\@只是记录时间，并不能代表内容，相应验证的能力减弱。本API的实现至少应该支持基于时间戳的\@Last-Modified\@validator。
 
 \* \@no-cache\@，\@no-store\@：分别提示浏览不要缓存和不要储存，用于标识一过性的数据。
 }
@@ -68,7 +68,7 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 
 \h3{前端缓存策略}
 
-前端缓存的基本假设是，如果用户访问（读）了这个资源，那么他最近还会访问这资源，但不一定要求看到的资源是最最新的（可以适当容忍非最新资源）。
+前端缓存的基本假设是，如果用户访问（读）了这个资源，那么他最近还会访问这资源，但可以适当容忍非最新资源。
 
 由于API使用了RESTful协议，最大程度地利用多级缓存，在设计资源时，也根据各种资源可能的修改频率进行了分割。数据根据缓存要求可分为以下几类:
 
@@ -94,8 +94,8 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
     (read cache hit rate)  \h 经常修改\newline
     (high write cache hit rate) \h 例子 \h 缓存策略 }
 \r{ \d 高/低 \d 否 \d 发表的回复 \d 写透 }
-\r{ \d 高 \d 是 \d 最新回复 \d 读时延迟/定时写回（比如连续100个读写回一次） }
-\r{ \d 低 \d 是 \d 默认不显示的统计信息 \d 读时/定时写回 }
+\r{ \d 高 \d 是 \d 最新回复 \d 读时延迟写回/定时写回（比如连续100个读写回一次） }
+\r{ \d 低 \d 是 \d 默认不显示的统计信息 \d 定时写回 }
 \table{end}
 
 
