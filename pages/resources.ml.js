@@ -4,54 +4,44 @@
 URL: \@https://api.cc98.org/resources\@
 
 \h4{资源访问方法：OPTIONS} 
-\h5{请求}
-\code+[http]{begin}
-OPTIONS /resources HTTP/1.1
-Host: api.cc98.org
-Content-Type: application/json; charset=utf-8; api_version=1.0
+使用\@OPTIONS\@获取资源对于当前用户的访问方法，返回于回复的报头中\@Allow\@字段。
 
-\code+{end}
+\h5{请求}
+
+\@OPTIONS /resources HTTP/1.1\@
 
 \h5{回复}
-\code+[http]{begin}
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8; api_version=1.0
-Content-Length: 0
-Cache-control: max-age=2592000, must-revalidate
-Last-Modified: Mon, 06 May 2013 06:12:57 GMT
-Allow: OPTIONS, GET
-Link: </resources>; rel="self"; method="GET"
 
-\code+{end}
+缓存策略：长过期，需验证。
+
+\@Allow\@：当前允许的方法，包括\@OPTIONS\@和\@GET\@。
+
+\@Link: </resources>; rel="self"; method="GET"\@
+
+无报文。
 
 \h4{读取资源列表：GET} 
 
-\h5{请求}
-请求无需授权，授权后和无授权下的请求处理相同。
-\code+[http]{begin}
-GET /resources HTTP/1.1
-Host: api.cc98.org
-Content-Type: application/json; charset=utf-8; api_version=1.0
+读取论坛资源入口列表。
 
-\code+{end}
+\h5{请求}
+
+\@GET /resources HTTP/1.1\@
 
 \h5{回复}
-\code+[http]{begin}
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8; api_version=1.0
-Content-Length: XXX
-Cache-control: max-age=2592000, must-revalidate
-Last-Modified: Mon, 06 May 2013 06:12:57 GMT
-Link: </resources>; rel="self"; method="GET"
 
-\code+{end}
+缓存策略：长过期，需验证。
 
+\@Link: </resources>; rel="self"; method="GET"\@
+
+报文：
 \code+[json]{begin}
 { "resources": {
     "collection":[
         { "rel": "link", "href": "/resources/boards", "title": "板块" },
-        { "rel": "link", "href": "/resources/topics", "title": "讨论" },
+        { "rel": "link", "href": "/resources/threads", "title": "讨论" },
         { "rel": "link", "href": "/resources/posts", "title": "回复" },
+        { "rel": "link", "href": "/resources/oplists", "title": "操作权限列表" },
         { "rel": "link", "href": "/resources/users", "title": "用户" },
         { "rel": "link", "href": "/resources/files", "title": "文件" },
         { "rel": "link", "href": "/resources/stats", "title": "统计" }],
@@ -62,7 +52,9 @@ Link: </resources>; rel="self"; method="GET"
 
 \code+{end}
 
-\h4{源和引用}
+\h5{资源类型：源和引用}
+
+\@source\@表示该资源的固定来源，而\@id\@表示该资源的标识符。
 
 源资源表示该资源指向的实体是相对固定的，表现为其\@id\@和\@source\@相同，比如代表用户的资源就是源资源。
 
