@@ -4,8 +4,41 @@ Oplist是关于operation的权限列表，也是一种资源，通过\@resources
 
 Oplist是有层级的，最上层的oplist只能后台修改，API层面只读。
 
+\h4{数据结构}
 
-\h4{oplist 的表示语法定义}
+\code+[coffee]{begin}
+
+    class Oplist
+        String id           # /resources/oplists/{id}
+        String oplist       # /resources/oplists/{oplist}
+        Boolean is_heritage # default: false
+        String default      # computed, /resources/oplists/{default}
+        Operation ops[]
+
+    class Operation
+        Boolean deny        # true for blacklist, false for whitelist
+        String op
+        String client       # cc98web
+        Boolean except      # used with 'user'
+        String user_type    # NORMAL GROUP PROXY
+        String user         # user/group/proxy name
+        String log_level    # LOG LOGALLOWD LOGDENIED
+\code+{end}
+
+所有的\@Oplist\@的数据结构均相同。
+\list*{
+    \* \@id\@
+    \* \@oplist\@表示关于此oplist的oplist。
+    \* \@is_heritage\@此oplist是否是继承与上级资源制定的默认oplist
+    \* \@default\@表示这个oplist绑定的资源的默认oplist，储存于绑定回复父资源（讨论）的\@default_post_oplist\@中。
+}
+
+当\@default == id && is_heritage\@表示此oplist是绑定的资源（e.g.回复）的默认oplist，且此oplist继承自上级资源（版块）；当\@default == id && !is_heritage\@，表示此oplist是绑定资源（e.g.回复）的默认oplist，但不继承于上级资源（e.g.版块），而是同级别资源（e.g.讨论）指定的。其他情况下，\@is_heritage\@无意义，取默认值\@false\@。
+
+注意，默认oplist将改变不止一个被绑定资源相同级别的资源，因而其权限等级是和被绑定资源的上级资源同级别的。如回复资源的oplist同回复资源属于同一级别，但回复资源的默认oplist则是和讨论资源同一级别的资源。
+
+\h4{oplist 人类可读的表示的语法定义}
+Oplist表示为机器可读的Operation的集合，为了便于表述，下面给出了其人类可读的表示定义。
 例子：
 \code{begin}
 op1: [cc98web] user
