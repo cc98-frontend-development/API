@@ -22,14 +22,14 @@ Oplist是有层级的，最上层的oplist只能后台修改，API层面只读�
         Boolean except      # used with 'user'
         String user_type    # NORMAL GROUP PROXY
         String user         # user/group/proxy name
-        String log_level    # LOG LOGALLOWD LOGDENIED
+        String log_level    # NOLOG LOG LOGALLOWD LOGDENIED
 \code+{end}
 
 所有的\@Oplist\@的数据结构均相同。
 \list*{
     \* \@id\@
     \* \@oplist\@表示关于此oplist的oplist。
-    \* \@is_heritage\@此oplist是否是继承与上级资源制定的默认oplist
+    \* \@is_heritage\@此oplist是否是继承与上级资源指定的默认oplist
     \* \@default\@表示这个oplist绑定的资源的默认oplist，储存于绑定回复父资源（讨论）的\@default_post_oplist\@中。
 }
 
@@ -84,15 +84,15 @@ op1:@user
 
 用户列表前的\@[cc98web]\@表示API服务的客户端(client_id)，目前仅支持网页客户端\@cc98web\@，如果忽略，则表示默认的\@[cc98web]\@。
 
-每条oplist后的\@(LOGALLOWED)\@、\@(LOGDENIED)\@或\@(LOG)\@是可选标记（注意没有空格），如果存在，则做权限判断时，检查到这条oplist的动作会被记录下来。\@(LOGALLOWED)\@表示通过这条oplist的动作被记录下来；\@LOGDENIED\@则表示不通过时记录；\@LOG\@则为任何状态下都记录；如果没有这个标记，则表示不做记录；可以参考以下的格式记录：
+每条oplist后的\@(LOGALLOWED)\@、\@(LOGDENIED)\@或\@(LOG)\@是可选标记（注意没有空格），如果存在，则做权限判断时，检查到这条oplist的动作会被记录下来。\@(LOGALLOWED)\@表示通过这条oplist的动作被记录下来；\@LOGDENIED\@则表示不通过时记录；\@LOG\@则为任何状态下都记录；如果没有这个标记，等同于\@NOLOG\@，则表示不做记录；可以参考以下的格式记录：
 
 \code{begin}
-op1:user | YYYY-MM-DD HH:MM:SS.sss user doing op1 with operand xxx | ALLOWED
-op2:@group | YYYY-MM-DD HH:MM:SS.sss user@group doing op2 with operand xxx | DENIED
+op1:user	| YYYY-MM-DD HH:MM:SS.sss user doing op1 with operand xxx		| ALLOWED
+op2:@group	| YYYY-MM-DD HH:MM:SS.sss user@group doing op2 with operand xxx | DENIED
 !op3:$proxy | YYYY-MM-DD HH:MM:SS.sss user$proxy doing op3 with operand xxx | DENIED
 \code{end}
 
-完整语法定义为（in \link+[PEG.js]{http://pegjs.majda.cz/}）：
+完整语法定义如下（in \link+[PEG.js]{http://pegjs.majda.cz/}）：
 
 \code+[haskell]{begin}
 
@@ -104,7 +104,7 @@ Items = Item+
 
 Item = (Whitelist / Blacklist) Log_mark? NL+
 
-Log_mark = "(LOG" ("ALLOWED"/"DENIED")? ")"
+Log_mark = "(" "LOG" ("ALLOWED"/"DENIED")? / "NOLOG" ")" 
 
 Whitelist = Op ":" Sp ("[" Sp? Client Sp?"]")? Users 
 
