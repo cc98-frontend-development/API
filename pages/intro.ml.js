@@ -5,6 +5,12 @@ API提供了一个数据接口，为网页客户端和服务器端通讯的协�
 
 新版cc98，采用基于JSON的RESTful协议作为API，只要支持HTTP协议，可以解析JSON的客户端均可以使用API访问服务器。
 
+\h3{论坛架构}
+
+\fig.{begin}
+\img{/pages/graph/architecture.png}
+\fig.{end}
+
 \h3{基本API和复合API}
 
 基本API为后端提供的任意资源的直接访问接口，比如某帖子的一个回复，常常意味着数据库表的一个或几个记录。由于基本API访问的资源变化比较少，缓存潜力大，推荐优先使用基本API。

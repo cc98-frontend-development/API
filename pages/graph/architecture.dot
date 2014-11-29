@@ -1,0 +1,62 @@
+strict graph g {
+	node [shape = box];
+	nodesep = 0.5;
+	ranksep = 1;
+
+	node_user [ label = "User"];
+
+	subgraph cluster_client {
+		label = "Clients"
+		node_client_web [ label = "PC Browsers: cc98web" ]
+		node_client_web2 [ label = "Mobile Browsers: cc98web" ]
+		node_client_other [ label = "Mobile Native Apps: xxx" ]
+	}
+
+	subgraph cluster_web_server {
+		label = "Web Servers"
+		node_web_http_server [ label = "Web Servers: www.cc98.org" ]
+	}
+	
+	subgraph cluster_data {
+		label = "Data"
+		API [shape = ellipse, label = "API(json)"]
+		HTML [shape = ellipse, label = "HTML\n CSS\n Javascripts\n Images..."]
+	}
+
+	subgraph cluster_api_server {
+		label = "API Servers"
+		node_api_http_server [ label = "API Servers: api.cc98.org" ]
+	}
+
+	subgraph cluster_storage {
+		label = "Storage Servers"
+		node_web_store [ label = "Static Storage: e.g. NFS"]
+		node_api_store [ label = "Dynamic Storage: e.g. Redis"]
+		node_database_store [ label = "Database Storage: e.g. MySQL"]
+	}
+
+	node_user -- node_client_web
+	node_user -- node_client_web2
+	node_user -- node_client_other
+
+	node_client_web -- HTML
+	node_client_web2 -- HTML
+	node_client_other -- HTML
+
+	HTML -- node_web_http_server
+	HTML -- node_web_http_server
+	HTML -- node_web_http_server
+
+	node_client_web -- API
+	node_client_web2 -- API
+	node_client_other -- API
+
+	API -- node_api_http_server
+	API -- node_api_http_server
+	API -- node_api_http_server
+
+	node_web_http_server -- node_web_store
+	node_api_http_server -- node_api_store
+	node_api_http_server -- node_database_store
+}
+
