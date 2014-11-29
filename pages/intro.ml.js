@@ -8,7 +8,7 @@ API提供了一个数据接口，为网页客户端和服务器端通讯的协�
 \h3{论坛架构}
 
 \fig.{begin}
-\img{/pages/graph/architecture.png}
+\img{pages/graph/architecture.png}
 \fig.{end}
 
 \h3{基本API和复合API}
