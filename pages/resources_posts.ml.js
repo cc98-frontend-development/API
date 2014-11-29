@@ -20,8 +20,9 @@
         Number rank
         Boolean enabled   
         Boolean hidden    
+        Boolean anonymous       # computed, /resources/threads/{parent}:anonymous
         String content
-        String time
+        String time             # ISO 8601 format
         String author           # /resources/users/{author}
         String author_name      # computed
         Object ext              # reserved for future use
@@ -32,6 +33,7 @@
     \* \@default_oplist\@，储存于\@/resources/threads/{parent}:default_post_oplist\@
     \* \@enabled\@通常为true，当为false时表示这个回复被关闭，用于占楼但不显示
     \* \@hidden\@通常为false，当为true时表示这个回复可以被隐藏
+    \* \@anonymous\@，是否匿名，由上级资源（讨论）指定，默认为false，为true时，author为空，author_name为hashed
     \* \@author_name\@，储存于\@/resources/users/{author}:name\@
 }
 
@@ -121,6 +123,11 @@ GET方法用于获取资源。
 }
 
 \code+{end}
+
+\alert{
+小心处理匿名情况：后端需要检查用户是否有parent（讨论）oplist中定义的view_anonymous权限，如果有，返回author和author_name；如果没有，则author为空，author_name由原始的用户名hash而来。
+}
+
 
 \h4{新建回复：POST}
 
