@@ -12,7 +12,7 @@
 
 \code+[coffee]{begin}
     class Post 
-        String id               # /resources/posts/{id}
+        String post_id          # /resources/posts/{post_id}
         String parent           # /resources/threads/{parent}
         String reply_to         # /resources/posts/{reply_to}
         String oplist           # /resources/oplists/{oplist}
@@ -39,7 +39,7 @@
 
 \h4{入口和过滤器}
 
-特定回复的资源的固定入口为\@/resources/posts/{id}\@，回复列表资源的固定入口为\@/resources/posts\@。
+特定回复的资源的固定入口为\@/resources/posts/{post_id}\@，回复列表资源的固定入口为\@/resources/posts\@。
 
 回复列表资源支持的过滤器：
 \list#{
@@ -77,7 +77,7 @@ Link: </resources/posts>; rel="self"; method="GET"
 
 GET方法用于获取资源。
 
-获取特定回复时使用\@/resources/posts/{id}\@。
+获取特定回复时使用\@/resources/posts/{post_id}\@。
 
 返回的JSON格式为：
 
@@ -85,7 +85,7 @@ GET方法用于获取资源。
 {
     "posts": {
         "post": {
-            "id": "1361"
+            "post_id": "1361"
             ...
             },
         "id": "/resources/posts/1361",
@@ -110,7 +110,7 @@ GET方法用于获取资源。
         "collection": [
             {
                 "post": {
-                    "id": "1361"
+                    "post_id": "1361"
                     ...
                     },
                 "id": "/resources/posts/1361",
@@ -204,7 +204,7 @@ GET方法用于获取资源。
 
 \alert[info]{no-cache, no-store}
 
-删除回复需要向\@/resources/posts/{id}\@使用DELETE方法，成功回复\@204 No Content\@。
+删除回复需要向\@/resources/posts/{post_id}\@使用DELETE方法，成功回复\@204 No Content\@。
 
 失败则根据失败原因分别返回。
 
@@ -214,7 +214,7 @@ GET方法用于获取资源。
 
 根据修改的回复内容不同分为如下操作。
 
-向\@/resources/posts/{id}\@使用PUT方法，格式为：
+向\@/resources/posts/{post_id}\@使用PUT方法，格式为：
 
 \code+[json]{begin}
 {
@@ -237,31 +237,31 @@ GET方法用于获取资源。
 \r{
     \d \@reply_to\@
     \d \@String\@
-    \d \@post({id})\@
+    \d \@post({post_id})\@
     \d \@/resources/posts/{reply_to}\@，回复所针对回复id，检查上级（讨论）的post权限
 }
 \r{
     \d \@content\@
     \d \@String\@
-    \d \@edit({id})\@
+    \d \@edit({post_id})\@
     \d 回复内容，必须为纯文本或\link+[ML]{/ebony/ml.html}，检查edit权限
 }
 \r{
     \d \@hidden\@
     \d \@Boolean\@
-    \d \@hide({id})\@ or \@unhide({id})\@
+    \d \@hide({post_id})\@ or \@unhide({post_id})\@
     \d 是否隐藏，检查hide/unhide权限。
 }
 \r{
     \d \@enabled\@
     \d \@Boolean\@
-    \d \@enable({id})\@ or \@disable({id})\@
+    \d \@enable({post_id})\@ or \@disable({post_id})\@
     \d 是否关闭，检查enable/disable权限。
 }
 \r{
     \d \@rank\@
     \d \@String\@
-    \d \@rank({id}, {rank})\@
+    \d \@rank({post_id}, {rank})\@
     \d 改变rank评分，\@{rank}\@为改变方式，例如\@"pro"\@和\@"con"\@分别代表加一分和减一分，需要检查rank权限。
 }
 \table{end}
