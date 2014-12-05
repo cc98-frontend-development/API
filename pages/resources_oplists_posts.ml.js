@@ -5,7 +5,7 @@
 回复操作权限表资源对应与一个回复资源，记录了该资源的操作，操作的执行者和操作记录之间的关系。
 
 \h4{入口和过滤器}
-回复的oplist可以通过\@/resources/oplists/posts/{post_id}\@访问（引用资源），如果知道其id可以直接访问源资源\@/resources/oplists/{id}\@。
+回复的oplist可以通过\@/resources/oplists/posts/{post_id}\@访问（引用资源），如果知道其id可以直接访问源资源\@/resources/oplists/{oplist_id}\@。
 
 Post oplist支持的过滤器：
 \list*{
@@ -26,14 +26,14 @@ OPTIONS用于获得用户对当前资源的访问方法，通过报头Allow字�
 
 GET方法用于获取资源。
 
-获取特定回复时使用\@/resources/oplists/posts/{id}\@。
+获取特定回复时使用\@/resources/oplists/posts/{post_id}\@。
 
 返回的JSON格式为：
 \code+[json]{begin}
 {
     "oplists": {
         "oplist": {
-            "id": "284",
+            "oplist_id": "284",
             "oplist": "25",
             "is_heritage": false,
             "default": "284",
@@ -49,7 +49,7 @@ GET方法用于获取资源。
 
 \code+{end}
 
-这个回复表示：通过\@"/resources/oplists/oplists/1361"\@访问了1361号回复的oplist，该oplist为284号，该oplist(284)的上级oplist(threads)是25号，该oplist(284)同时也是同一thread中的默认oplist(\@default == id\@)，并不从上级(boards)继承而来(\@!is_heritage\@)，而是这个threads单独指定的。
+这个回复表示：通过\@"/resources/oplists/oplists/1361"\@访问了1361号回复的oplist，该oplist为284号，该oplist(284)的上级oplist(threads)是25号，该oplist(284)同时也是同一thread中的默认oplist(\@default == oplist_id\@)，并不从上级(boards)继承而来(\@!is_heritage\@)，而是这个threads单独指定的。
 
 \@ops\@根据筛选器\@?format\@不同分为两种表现形式。参见\link+[oplist]{/#/permission_oplist.ml.js}
 
