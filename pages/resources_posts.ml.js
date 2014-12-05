@@ -17,7 +17,7 @@
         String reply_to         # /resources/posts/{reply_to}
         String oplist           # /resources/oplists/{oplist}
         String default_oplist   # computed, /resources/oplists/{oplist}
-        Number rank
+        Number rank_score
         Boolean enabled   
         Boolean hidden    
         Boolean anonymous       # computed, /resources/threads/{parent}:anonymous
@@ -31,6 +31,7 @@
 
 \list*{
     \* \@default_oplist\@，储存于\@/resources/threads/{parent}:default_post_oplist\@
+    \* \@rank_score\@，用于排序的评分
     \* \@enabled\@通常为true，当为false时表示这个回复被关闭，用于占楼但不显示
     \* \@hidden\@通常为false，当为true时表示这个回复可以被隐藏
     \* \@anonymous\@，是否匿名，由上级资源（讨论）指定，默认为false，为true时，author为空，author_name为hashed
@@ -46,7 +47,7 @@
     \* \@?parent={parent}\@，某一讨论下的回复列表；
     \* \@?reply_to={reply_to}\@，回复某一回复的回复列表；
     \* \@?author={author}\@，某一用户发表的回复列表；
-    \* \@?sort_by={sort}\@，回复列表排序，可取的值为\@time\@（时间顺序），\@rank\@（评分顺序），默认为\@time\@；
+    \* \@?sort_by={sort}\@，回复列表排序，可取的值为\@time\@（时间顺序），\@rank_score\@（评分顺序），默认为\@time\@；
     \* \@?count={count}&offset={offset}\@，回复列表的第\@count*offset+1\@到\@count*offset+count\@项，共计\@count\@项。默认\@count=20, offset=0\@。\@count\@上限为100，即一个请求最多返回100条post的集合。
 }
 
@@ -261,8 +262,8 @@ GET方法用于获取资源。
 \r{
     \d \@rank\@
     \d \@String\@
-    \d \@rank({post_id}, {rank})\@
-    \d 改变rank评分，\@{rank}\@为改变方式，例如\@"pro"\@和\@"con"\@分别代表加一分和减一分，需要检查rank权限。
+    \d \@rank({post_id}, {rank_key})\@
+    \d 改变rank_score评分，\@{rank_key}\@为改变方式，例如\@"pro"\@和\@"con"\@分别代表加一分和减一分，需要检查rank权限。
 }
 \table{end}
 
