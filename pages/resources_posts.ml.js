@@ -16,11 +16,11 @@
         String parent           # /resources/threads/{parent}
         String reply_to         # /resources/posts/{reply_to}
         String oplist           # /resources/oplists/{oplist}
-        String default_oplist   # computed, /resources/oplists/{oplist}
+        String default_oplist   # computed, i.e. /resources/oplists/{oplist}
         Number rank_score
         Boolean enabled   
         Boolean hidden    
-        Boolean anonymous       # computed, /resources/threads/{parent}:anonymous
+        Boolean anonymous       # computed, i.e. /resources/threads/{parent}:anonymous
         String content
         String time             # ISO 8601 format
         String author           # /resources/users/{author}
