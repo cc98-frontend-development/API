@@ -12,37 +12,40 @@
 
 \code+[coffee]{begin}
     class Post 
-        String post_id          	# /resources/posts/{post_id}
-        String parent           	# /resources/threads/{parent}
-        String reply_to         	# /resources/posts/{reply_to}
-        String oplist           	# /resources/oplists/{oplist}
+        String post_id              # /resources/posts/{post_id}
+        String parent               # /resources/threads/{parent}
+        String reply_to             # /resources/posts/{reply_to}
+        String oplist               # /resources/oplists/{oplist}
         String default_post_oplist  # computed, i.e. /resources/threads/{parent}:default_post_oplist, /resources/oplists/{default_post_oplist}
         Number rank_score
         Boolean enabled   
         Boolean hidden    
-        Boolean anonymous       	# computed, i.e. /resources/threads/{parent}:anonymous
+        Boolean anonymous           # computed, i.e. /resources/threads/{parent}:anonymous
         String content
-        String time             	# ISO 8601 format
-        String author           	# /resources/users/{author}
-        String author_name      	# computed
-        Object ext              	# reserved for future use
+        String time                 # ISO 8601 format
+        String author               # /resources/users/{author}
+        String author_name          # computed
+        Object ext                  # reserved for future use
 
 \code+{end}
 
 \fig{begin}
 
-	\img{pages/graph/erd/posts.png}
-
-	\list*{
-    	\* \@default_oplist\@，储存于\@/resources/threads/{parent}:default_post_oplist\@
-    	\* \@rank_score\@，用于排序的评分
-    	\* \@enabled\@通常为true，当为false时表示这个回复被关闭，用于占楼但不显示
-    	\* \@hidden\@通常为false，当为true时表示这个回复可以被隐藏
-    	\* \@anonymous\@，是否匿名，由上级资源（讨论）指定，默认为false，为true时，author为空，author_name为hashed
-    	\* \@author_name\@，储存于\@/resources/users/{author}:name\@
-	}
+    \img{pages/graph/erd/posts.png}
+    \alert[info]{\@*key*\@表示该键为主键；\@-key-\@表示该键储存于其他结构中，在此资源内只读；\@<key>\@表示该键为一结构}
 
 \fig{end}
+
+\list*{
+    \* \@parent\@，指向上级（讨论）
+    \* \@default_post_oplist\@，储存于\@/resources/threads/{parent}:default_post_oplist\@
+    \* \@rank_score\@，用于排序的评分
+    \* \@enabled\@通常为true，当为false时表示这个回复被关闭，用于占楼但不显示
+    \* \@hidden\@通常为false，当为true时表示这个回复可以被隐藏
+    \* \@anonymous\@，是否匿名，由上级资源（讨论）指定，默认为false，为true时，author为空，author_name为hashed
+    \* \@author_name\@，储存于\@/resources/users/{author}:name\@
+}
+
 \h4{入口和过滤器}
 
 特定回复的资源的固定入口为\@/resources/posts/{post_id}\@，回复列表资源的固定入口为\@/resources/posts\@。
@@ -52,7 +55,7 @@
     \* \@?parent={parent}\@，某一讨论下的回复列表；
     \* \@?reply_to={reply_to}\@，回复某一回复的回复列表；
     \* \@?author={author}\@，某一用户发表的回复列表；
-    \* \@?sort_by={sort}\@，回复列表排序，可取的值为\@time\@（时间顺序），\@rank_score\@（评分顺序），默认为\@time\@；
+    \* \@?sort_by={sort_method}\@，回复列表排序，可取的值为\@'time'\@（时间顺序），\@'rank_score'\@（评分顺序），默认为\@'time'\@；
     \* \@?count={count}&offset={offset}\@，回复列表的第\@count*offset+1\@到\@count*offset+count\@项，共计\@count\@项。默认\@count=20, offset=0\@。\@count\@上限为100，即一个请求最多返回100条post的集合。
 }
 
@@ -75,7 +78,7 @@ Content-Length: 0
 Cache-control: max-age=2592000, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 Allow: OPTIONS, GET
-Link: </resources/posts>; rel="self"; method="GET"
+Link: </resources/posts?count=20&offset=0>; rel="self"; method="GET"
 \code+{end}
 
 \h4{获取资源：GET}
@@ -106,7 +109,7 @@ GET方法用于获取资源。
 默认max-age:minutes，无需验证，可以获得全局的回复列表\newline
 有parent筛选器时，max-age:days, must-revalidate，获得某一讨论的回复列表}
 
-获取资源列表时使用\@/resources/posts\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?count=20&offset=0\@。
+获取资源列表时使用\@/resources/posts\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=time&count=20&offset=0\@。
 
 返回的JSON格式为：
 \code+[json]{begin}
@@ -128,7 +131,7 @@ GET方法用于获取资源。
                 "source": "/resources/posts/xxx"
             },
             ...],
-        "id": "/resources/posts?parent=161&count=20&offset=0",
+        "id": "/resources/posts?parent=161&sort_by=time&count=20&offset=0",
         "source": "/resources/posts"
     }
 }
@@ -140,7 +143,7 @@ GET方法用于获取资源。
 }
 
 
-\h4{新建回复：POST}
+\h4{新建资源：POST}
 
 \alert[info]{no-cache, no-store}
 
@@ -168,19 +171,13 @@ GET方法用于获取资源。
     \d \@parent\@
     \d \@String\@
     \d yes
-    \d \@/resources/threads/{parent}\@，所在讨论id，根据parent检查上级（讨论）的post权限
+    \d \@/resources/threads/{parent}\@，所在讨论id，根据\@{parent}\@检查上级（讨论）的\@post\@权限
 }
 \r{
     \d \@reply_to\@
     \d \@String\@
     \d optional
     \d \@/resources/posts/{reply_to}\@，回复所针对回复id，若省略，则默认为所在讨论第一条id
-}
-\r{
-    \d \@parent\@
-    \d \@String\@
-    \d yes
-    \d \@/resources/threads/{parent}\@，所在讨论id
 }
 \r{
     \d \@content\@
@@ -192,13 +189,13 @@ GET方法用于获取资源。
     \d \@hidden\@
     \d \@Boolean\@
     \d optional
-    \d 是否隐藏，默认为false，若为true需要用户有此讨论的post_hidden权限。
+    \d 是否隐藏，默认为\@false\@，若为\@true\@需要用户有此讨论的\@post_hidden\@权限。
 }
 \r{
     \d \@enabled\@
     \d \@Boolean\@
     \d optional
-    \d 是否关闭，默认为true，若为false需要用户有此讨论的post_disabled权限。
+    \d 是否关闭，默认为\@true\@，若为\@false\@需要用户有此讨论的\@post_disabled\@权限。
 }
 \table{end}
 
@@ -206,7 +203,7 @@ GET方法用于获取资源。
 
 失败则根据失败原因分别回复。
 
-\h4{删除回复：DELETE}
+\h4{删除资源：DELETE}
 
 \alert[info]{no-cache, no-store}
 
@@ -214,7 +211,7 @@ GET方法用于获取资源。
 
 失败则根据失败原因分别返回。
 
-\h4{修改回复：PUT}
+\h4{修改资源：PUT}
 
 \alert[info]{no-cache, no-store}
 

@@ -13,10 +13,10 @@ var nav = [
     },
     { link_text: "资源", link_file:"resources.ml.js",
         child:[
-        {link_text: "resources/posts", link_file:"resources_posts.ml.js"}
+        {link_text: "resources/posts", link_file:"resources_posts.ml.js"},
 //        {link_text: "resources/boards", link_file:"resources_boards.ml.js"},
 //        {link_text: "resources/stats/boards", link_file:"resources_stats_boards.ml.js"},
-//        {link_text: "resources/threads", link_file:"resources_threads.ml.js"}
+        {link_text: "resources/threads", link_file:"resources_threads.ml.js"}
         ]
     },
     { link_text: "授权", link_file:"auth.ml.js",

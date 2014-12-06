@@ -6,19 +6,19 @@ strict digraph g {
 
 	subgraph cluster_post_1 {
 		label = "Post";
-		node_a_post_post_id        [ label = "*post_id*" ];
-		node_a_post_parent         [ label = "parent" ];
-		node_a_post_reply_to       [ label = "reply_to" ];
-		node_a_post_oplist         [ label = "oplist" ];
-		node_a_post_default_oplist [ label = "-default_oplist-" ];
-		node_a_post_rank_score     [ label = "rank_score" ];
-		node_a_post_enable         [ label = "enable" ];
-		node_a_post_hidden         [ label = "hidden" ];
-		node_a_post_anonymous      [ label = "-anonymous-" ];
-		node_a_post_content        [ label = "content" ];
-		node_a_post_time           [ label = "time" ];
-		node_a_post_author         [ label = "author" ];
-		node_a_post_author_name    [ label = "-author_name-" ];
+		node_a_post_post_id             [ label = "*post_id*" ];
+		node_a_post_parent              [ label = "parent" ];
+		node_a_post_reply_to            [ label = "reply_to" ];
+		node_a_post_oplist              [ label = "oplist" ];
+		node_a_post_default_post_oplist [ label = "-default_post_oplist-" ];
+		node_a_post_rank_score          [ label = "rank_score" ];
+		node_a_post_enable              [ label = "enable" ];
+		node_a_post_hidden              [ label = "hidden" ];
+		node_a_post_anonymous           [ label = "-anonymous-" ];
+		node_a_post_content             [ label = "content" ];
+		node_a_post_time                [ label = "time" ];
+		node_a_post_author              [ label = "author" ];
+		node_a_post_author_name         [ label = "-author_name-" ];
 	}
 
 	subgraph cluster_post_2 {
@@ -53,8 +53,8 @@ strict digraph g {
 
 	node_a_post_parent -> node_a_thread_thread_id;
 	node_a_post_reply_to -> node_a_post_post_id_2;
-	node_a_post_oplist -> node_a_oplist_oplist_id;
-	node_a_post_default_oplist -> node_a_thread_default_post_oplist [ style = dashed ];
+	node_a_post_oplist -> node_a_oplist_oplist_id [ label = "using\n default" ];
+	node_a_post_default_post_oplist -> node_a_thread_default_post_oplist [ style = dashed ];
 	node_a_post_anonymous -> node_a_thread_anonymous [style = dashed ];
 	node_a_post_author -> node_a_user_user_id;
 	node_a_post_author_name -> node_a_user_name     [ style = dashed ];
