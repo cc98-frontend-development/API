@@ -12,20 +12,20 @@
 
 \code+[coffee]{begin}
     class Post 
-        String post_id          # /resources/posts/{post_id}
-        String parent           # /resources/threads/{parent}
-        String reply_to         # /resources/posts/{reply_to}
-        String oplist           # /resources/oplists/{oplist}
-        String default_oplist   # computed, i.e. /resources/oplists/{oplist}
+        String post_id          	# /resources/posts/{post_id}
+        String parent           	# /resources/threads/{parent}
+        String reply_to         	# /resources/posts/{reply_to}
+        String oplist           	# /resources/oplists/{oplist}
+        String default_post_oplist  # computed, i.e. /resources/threads/{parent}:default_post_oplist, /resources/oplists/{default_post_oplist}
         Number rank_score
         Boolean enabled   
         Boolean hidden    
-        Boolean anonymous       # computed, i.e. /resources/threads/{parent}:anonymous
+        Boolean anonymous       	# computed, i.e. /resources/threads/{parent}:anonymous
         String content
-        String time             # ISO 8601 format
-        String author           # /resources/users/{author}
-        String author_name      # computed
-        Object ext              # reserved for future use
+        String time             	# ISO 8601 format
+        String author           	# /resources/users/{author}
+        String author_name      	# computed
+        Object ext              	# reserved for future use
 
 \code+{end}
 
