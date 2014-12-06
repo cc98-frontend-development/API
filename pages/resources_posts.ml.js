@@ -29,15 +29,20 @@
 
 \code+{end}
 
-\list*{
-    \* \@default_oplist\@，储存于\@/resources/threads/{parent}:default_post_oplist\@
-    \* \@rank_score\@，用于排序的评分
-    \* \@enabled\@通常为true，当为false时表示这个回复被关闭，用于占楼但不显示
-    \* \@hidden\@通常为false，当为true时表示这个回复可以被隐藏
-    \* \@anonymous\@，是否匿名，由上级资源（讨论）指定，默认为false，为true时，author为空，author_name为hashed
-    \* \@author_name\@，储存于\@/resources/users/{author}:name\@
-}
+\fig{begin}
 
+	\img{pages/graph/erd/posts.png}
+
+	\list*{
+    	\* \@default_oplist\@，储存于\@/resources/threads/{parent}:default_post_oplist\@
+    	\* \@rank_score\@，用于排序的评分
+    	\* \@enabled\@通常为true，当为false时表示这个回复被关闭，用于占楼但不显示
+    	\* \@hidden\@通常为false，当为true时表示这个回复可以被隐藏
+    	\* \@anonymous\@，是否匿名，由上级资源（讨论）指定，默认为false，为true时，author为空，author_name为hashed
+    	\* \@author_name\@，储存于\@/resources/users/{author}:name\@
+	}
+
+\fig{end}
 \h4{入口和过滤器}
 
 特定回复的资源的固定入口为\@/resources/posts/{post_id}\@，回复列表资源的固定入口为\@/resources/posts\@。
