@@ -49,7 +49,7 @@ GET方法用于获取资源。
 
 \code+{end}
 
-这个回复表示：通过\@"/resources/oplists/oplists/1361"\@访问了1361号回复的oplist，该oplist为284号，该oplist(284)的上级oplist(threads)是25号，该oplist(284)同时也是同一thread中的默认oplist(\@default == oplist_id\@)，并不从上级(boards)继承而来(\@!is_heritage\@)，而是这个threads单独指定的。
+这个回复表示：通过\@"/resources/oplists/posts/1361"\@访问了1361号回复的oplist，该oplist为284号，该oplist(284)的上级oplist(threads)是25号，该oplist(284)同时也是同一thread中的默认oplist(\@default == oplist_id\@)，并不从上级(boards)继承而来(\@!is_heritage\@)，而是这个threads单独指定的。
 
 \@ops\@根据筛选器\@?format\@不同分为两种表现形式。参见\link+[oplist]{/#/permission_oplist.ml.js}
 
@@ -97,7 +97,7 @@ GET方法用于获取资源。
 }
 \r{
     \d rank
-    \d \@{post_id, rank_chage}\@
+    \d \@({post_id}, {rank_chage})\@
     \d 是否允许改变回复评分（顶/踩/感谢回复）
 }
 \table{end}
