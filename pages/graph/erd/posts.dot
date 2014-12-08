@@ -11,7 +11,7 @@ strict digraph g {
 		node_a_post_reply_to            [ label = "reply_to" ];
 		node_a_post_oplist              [ label = "oplist" ];
 		node_a_post_default_post_oplist [ label = "-default_post_oplist-" ];
-		node_a_post_rank_score          [ label = "rank_score" ];
+		node_a_post_rank_score          [ label = "-rank_score-" ];
 		node_a_post_enable              [ label = "enable" ];
 		node_a_post_hidden              [ label = "hidden" ];
 		node_a_post_anonymous           [ label = "-anonymous-" ];
@@ -19,6 +19,11 @@ strict digraph g {
 		node_a_post_time                [ label = "time" ];
 		node_a_post_author              [ label = "author" ];
 		node_a_post_author_name         [ label = "-author_name-" ];
+	}
+
+	subgraph cluster_post_stat {
+		label = "PostStat";
+		node_a_post_stat_rank_score [ label = "rank_score" ];
 	}
 
 	subgraph cluster_post_2 {
@@ -56,6 +61,7 @@ strict digraph g {
 	node_a_post_oplist -> node_a_oplist_oplist_id [ label = "using\n default" ];
 	node_a_post_default_post_oplist -> node_a_thread_default_post_oplist [ style = dashed ];
 	node_a_post_anonymous -> node_a_thread_anonymous [style = dashed ];
+	node_a_post_rank_score -> node_a_post_stat_rank_score [style = dashed ];
 	node_a_post_author -> node_a_user_user_id;
 	node_a_post_author_name -> node_a_user_name     [ style = dashed ];
 

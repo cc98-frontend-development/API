@@ -17,7 +17,7 @@
         String reply_to             # /resources/posts/{reply_to}
         String oplist               # /resources/oplists/{oplist}
         String default_post_oplist  # computed, i.e. /resources/threads/{parent}:default_post_oplist, /resources/oplists/{default_post_oplist}
-        Number rank_score
+        Number rank_score           # computed, i.e. /resources/stats/posts/{post_id}:rank_score
         Boolean enabled   
         Boolean hidden    
         Boolean anonymous           # computed, i.e. /resources/threads/{parent}:anonymous
@@ -39,7 +39,7 @@
 \list*{
     \* \@parent\@，指向上级（讨论）
     \* \@default_post_oplist\@，储存于\@/resources/threads/{parent}:default_post_oplist\@
-    \* \@rank_score\@，用于排序的评分
+    \* \@rank_score\@，用于排序的评分，储存于\@/resources/stats/posts/{post_id}:rank_score\@
     \* \@enabled\@通常为true，当为false时表示这个回复被关闭，用于占楼但不显示
     \* \@hidden\@通常为false，当为true时表示这个回复可以被隐藏
     \* \@anonymous\@，是否匿名，由上级资源（讨论）指定，默认为false，为true时，author为空，author_name为hashed
@@ -265,7 +265,7 @@ GET方法用于获取资源。
     \d \@rank\@
     \d \@String\@
     \d \@rank({post_id}, {rank_key})\@
-    \d 改变rank_score评分，\@{rank_key}\@为改变方式，例如\@"pro"\@和\@"con"\@分别代表加一分和减一分，需要检查rank权限。
+    \d 改变rank_score评分，\@{rank_key}\@为改变方式，例如\@"pro"\@和\@"con"\@，需要检查rank权限。
 }
 \table{end}
 
