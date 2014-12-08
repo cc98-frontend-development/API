@@ -1,0 +1,38 @@
+#dot
+strict digraph g {
+	node [ shape = box ];
+	nodesep = 0.1;
+	ranksep = 1;
+	
+	subgraph cluster_thread_stat {
+		label = "ThreadStat";
+		node_a_thread_stat_thread_id [ label = "*thread_id*" ];
+		node_a_thread_stat_last_post [ label = "last_post" ];
+		node_a_thread_stat_last_post_time [ label = "last_post_time" ];
+		node_a_thread_stat_age            [ label = "-age-" ];
+		node_a_thread_stat_posts_count    [ label = "posts_count" ];
+		node_a_thread_stat_viewers_count  [ label = "viewers_count" ];
+		node_a_thread_stat_post_to_view_ratio [ label = "-post_to_view_ratio-" ];
+		node_a_thread_stat_popularity_score   [ label = "-popularity_score-" ];
+	}
+
+	subgraph cluster_thread {
+		label = "Threads";
+		node_a_thread_thread_id             [ label = "*thread_id*" ];
+		node_a_thread_time                  [ label = "time" ];
+	}
+
+	subgraph cluster_post {
+		label = "Post";
+		node_a_post_post_id      [ label = "*post_id*" ];
+		node_a_post_parent       [ label = "parent" ];
+		node_a_post_time         [ label = "time" ];
+	}
+
+	node_a_thread_stat_thread_id -> node_a_thread_thread_id;
+	node_a_thread_stat_last_post -> node_a_post_post_id;
+	node_a_thread_stat_last_post_time -> node_a_post_time [ style = dashed ];
+	node_a_thread_stat_age -> node_a_thread_time [ label = "1+ Now() - time", style = dashed ];
+
+	node_a_post_parent -> node_a_thread_thread_id;
+}

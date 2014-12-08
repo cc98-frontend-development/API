@@ -7,6 +7,7 @@
 一个普通的好评和差评只改变\@rank_up\@\@rank_down\@。也可以通过花费论坛积分改变权重\@rank_up_weight\@\@rank_down_weight\@。
 
 \h4{数据结构}
+\@computed\@表示后端不储存该字段，仅仅在读时计算出，在API层面只读。
 
 \code+[coffee]{begin}
     class PostStat
@@ -54,7 +55,7 @@ GET方法用于获取资源。
 \code+[json]{begin}
 {
     "stats": {
-        "poststats": {
+        "poststat": {
             "post_id": "1361"
             ...
             },

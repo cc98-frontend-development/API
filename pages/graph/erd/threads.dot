@@ -25,6 +25,11 @@ strict digraph g {
 		node_a_thread_author_name           [ label = "-author_name-" ];
 	}
 
+	subgraph cluster_thread_stat {
+		label = "ThreadStat";
+		node_a_thread_stat_thread_id [ label = "*thread_id*" ];
+	}
+
 	subgraph cluster_highlight {
 		label = "Highlight"
 		node_a_highlight_color  [ label = "color" ];
@@ -94,4 +99,6 @@ strict digraph g {
 	node_a_post_author_name -> node_a_user_name     [ style = dashed ];
 
 	node_a_board_default_thread_oplist -> node_a_oplist_oplist_id;
+	
+	node_a_thread_stat_thread_id -> node_a_thread_thread_id;
 }
