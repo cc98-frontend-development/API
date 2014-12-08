@@ -225,31 +225,31 @@ GET方法用于获取资源。
     \d \@top_type\@
     \d \@String\@
     \d optional
-    \d 置顶类型，\@'off'\@（默认） \@'temp'\@ \@'board'\@ \@'parent'\@ \@'top'\@中任一，检查用户有此板块的\@post_top\@权限
+    \d 置顶类型，\@'off'\@（默认） \@'temp'\@ \@'board'\@ \@'parent'\@ \@'top'\@中任一，检查用户有此板块相应的\@top\@权限
 }
 \r{
     \d \@good_type\@
     \d \@String\@
     \d optional
-    \d 精华类型，\@'off'\@（默认） \@'reserved'\@ \@'elite'\@中任一，检查用户有此板块的\@post_good\@权限
+    \d 精华类型，\@'off'\@（默认） \@'reserved'\@ \@'elite'\@中任一，检查用户有此板块相应的\@good\@权限
 }
 \r{
     \d \@anonymous\@
     \d \@Boolean\@
     \d optional
-    \d 是否匿名，\@false\@（默认）, \@true\@检查用户有此板块的\@post_anonymous\@权限
+    \d 是否匿名，\@false\@（默认）, \@true\@检查用户有此板块的\@anonymous\@权限
 }
 \r{
     \d \@no_post\@
     \d \@Boolean\@
     \d optional
-    \d 是否关闭回复，\@false\@（默认）, \@true\@检查用户有此板块的\@post_no_post\@权限
+    \d 是否关闭回复，\@false\@（默认）, \@true\@检查用户有此板块的\@close\@权限
 }
 \r{
     \d \@highlight\@
     \d \@Object\@
     \d optional
-    \d 是否高亮，直接提供json（e.g.\@{"color":"#030303"， "bold":false, "italic":false}\@），检查用户有此板块的\@post_highlight\@权限
+    \d 是否高亮，直接提供json（e.g.\@{"color":"#030303"， "bold":false, "italic":false}\@），检查用户有此板块的\@highlight\@权限
 }
 
 \table{end}
