@@ -264,7 +264,7 @@ GET方法用于获取资源。
 
 删除讨论需要向\@/resources/threads/{thread_id}\@使用DELETE方法，成功回复\@204 No Content\@。
 
-讨论下的所有回复也因此删除。
+讨论下的所有回复也因此删除，需要检查delete权限，和讨论下所有回复的delete权限。
 
 失败则根据失败原因分别返回。
 
