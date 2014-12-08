@@ -23,6 +23,7 @@ strict digraph g {
 
 	subgraph cluster_post_stat {
 		label = "PostStat";
+		node_a_post_stat_post_id    [ label = "*post_id*" ];
 		node_a_post_stat_rank_score [ label = "rank_score" ];
 	}
 
@@ -67,4 +68,6 @@ strict digraph g {
 
 	node_a_thread_default_post_oplist -> node_a_oplist_oplist_id;
 	node_a_oplist_oplist -> node_a_oplist_oplist_id_2;
+
+	node_a_post_stat_post_id -> node_a_post_post_id;
 }
