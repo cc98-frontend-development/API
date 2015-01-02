@@ -1,0 +1,4 @@
+#/bin/bash
+set -x
+dot -Tpng -O $1
+rename 's/.dot//g' $1.png 
