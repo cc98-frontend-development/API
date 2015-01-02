@@ -33,6 +33,8 @@
 	\* \@last_post_id\@: 记录最新发表回复id。
 	\* \@thread_count_total\@: 记录版块下的总讨论数。
 	\* \@thread_count_today\@: 记录版块下今日讨论数。
+	\* \@thread_view_total\@: 记录版块下的总讨论查看数。
+	\* \@thread_view_today\@: 记录版块下今日讨论查看数。
 	\* \@post_count_total\@: 记录版块下的总回复数。
 	\* \@post_count_today\@: 记录版块下今日回复数。
 }
@@ -45,7 +47,7 @@
 
 支持的过滤器为
 \list#{
-	\* \@?parent={parent}\@，某一个版块下的所有版块统计；
+	\* \@?parent={parent}\@，某一个版块下的所有子版块统计，不包括孙版块统计。
 }
 
 \h4{资源访问方法：OPTIONS}
@@ -56,7 +58,7 @@ OPTIONS用于获得用户对当前资源的访问方法，通过报头Allow字�
 其中，OPTIONS方法一直可用，其他方法根据用户当前的返回。
 
 \h4{获取资源：GET}
-\alert[info]{max-age:minutes, 无需验证，后台按照负载定期重新计算缓存内的资源}
+\alert[info]{max-age:minutes, 无需验证}
 
 GET方法用于获取资源。
 
@@ -77,7 +79,6 @@ GET方法用于获取资源。
 }
 
 \code+{end}
-
 
 获取版块统计列表使用\@/resources/stats/boards/?parent={parent}\@。
 

@@ -7,12 +7,14 @@ strict digraph g {
 	subgraph cluster_post_stat {
 		label = "BoardStat";
 		node_a_board_stat_board_id           [ label = "*board_id*" ];
-		node_a_board_stat_thread_count_total [ label = "thread_count_total" ];
-		node_a_board_stat_thread_count_today [ label = "thread_count_today" ];
-		node_a_board_stat_post_count_total   [ label = "post_count_total" ];
-		node_a_board_stat_post_count_today   [ label = "post_count_today" ];
 		node_a_board_stat_last_thread_id     [ label = "last_thread_id" ];
 		node_a_board_stat_last_post_id       [ label = "last_post_id" ];
+		node_a_board_stat_thread_count_total [ label = "thread_count_total" ];
+		node_a_board_stat_thread_count_today [ label = "thread_count_today" ];
+		node_a_board_stat_thread_view_total  [ label = "thread_view_total" ];
+		node_a_board_stat_thread_view_today  [ label = "thread_view_today" ];
+		node_a_board_stat_post_count_total   [ label = "post_count_total" ];
+		node_a_board_stat_post_count_today   [ label = "post_count_today" ];
 	}
 
 	subgraph cluster_board {
