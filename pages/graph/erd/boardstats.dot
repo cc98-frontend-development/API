@@ -1,0 +1,36 @@
+#dot
+strict digraph g {
+	node [ shape = box ];
+	nodesep = 0.1;
+	ranksep = 1;
+
+	subgraph cluster_post_stat {
+		label = "BoardStat";
+		node_a_board_stat_board_id           [ label = "*board_id*" ];
+		node_a_board_stat_thread_count_total [ label = "thread_count_total" ];
+		node_a_board_stat_thread_count_today [ label = "thread_count_today" ];
+		node_a_board_stat_post_count_total   [ label = "post_count_total" ];
+		node_a_board_stat_post_count_today   [ label = "post_count_today" ];
+		node_a_board_stat_last_thread_id     [ label = "last_thread_id" ];
+		node_a_board_stat_last_post_id       [ label = "last_post_id" ];
+	}
+
+	subgraph cluster_board {
+		label = "Board";
+		node_a_board_board_id             [ label = "*board_id*" ];
+	}
+
+	subgraph cluster_post {
+		label = "Post";
+		node_a_post_post_id             [ label = "*post_id*" ];
+	}
+
+	subgraph cluster_thread {
+		label = "Thread";
+		node_a_thread_thread_id           [ label = "*thread_id*" ];
+	}
+
+	node_a_board_stat_board_id -> node_a_board_board_id;
+	node_a_board_stat_last_thread_id -> node_a_thread_thread_id;
+	node_a_board_stat_last_post_id -> node_a_post_post_id;
+}

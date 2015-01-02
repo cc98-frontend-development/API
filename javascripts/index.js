@@ -22,7 +22,7 @@ var nav = [
         child:[
         {link_text: "resources/stats/posts", link_file:"resources_stats_posts.ml.js"},
         {link_text: "resources/stats/threads", link_file:"resources_stats_threads.ml.js"},
-//        {link_text: "resources/stats/boards", link_file:"resources_stats_boards.ml.js"},
+        {link_text: "resources/stats/boards", link_file:"resources_stats_boards.ml.js"}
         ]
     },
     { link_text: "授权", link_file:"auth.ml.js",
