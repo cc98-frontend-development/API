@@ -29,7 +29,7 @@
 \list*{
     \* \@rank_up\@ \@rank_down\@: 记录好评/差评的总人数，默认为1。
     \* \@rank_up_weight\@ \@rank_down_weight\@：记录好评/差评的总权重，默认为1。
-    \* \@rank_score\@：\@ rank_score = (rank_up * log(rank_up_weight)) / (rank_down * log(rank_down_weight)) \@
+    \* \@rank_score\@：由\@rank_up\@\@rank_down\@\@rank_up_weight\@\@rank_down_weight\@计算得出的一个用于确定排位顺序的分数，比如：\@ rank_score = (rank_up * log(rank_up_weight)) / (rank_down * log(rank_down_weight)) \@
 }
 
 \h4{入口和过滤器}
