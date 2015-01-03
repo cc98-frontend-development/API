@@ -1,0 +1,77 @@
+#dot
+strict digraph g {
+	node [ shape = box ];
+	nodesep = 0.1;
+	ranksep = 1.5;
+
+	subgraph cluster_oplist_1 {
+		label = "Oplist (of Post, default)";
+		node_a_oplist_oplist_id_1           [ label = "*oplist_id*" ];
+		node_a_oplist_oplist_default_1      [ label = "-default-" ];
+		node_a_oplist_is_heritage_1         [ label = "is_heritage: true" ];
+	}
+
+	subgraph cluster_oplist_2 {
+		label = "Oplist (of Post)";
+		node_a_oplist_oplist_id_2           [ label = "*oplist_id*" ];
+		node_a_oplist_oplist_default_2      [ label = "-default-" ];
+		node_a_oplist_is_heritage_2         [ label = "is_heritage: false" ];
+	}
+
+	subgraph cluster_oplist_post_1 {
+		label = "Post";
+		node_a_post_post_id_1               [ label = "*post_id*" ];
+		node_a_post_oplist_1                [ label = "oplist" ];
+		node_a_post_parent_1                [ label = "parent" ];
+	}
+
+	subgraph cluster_oplist_post_2 {
+		label = "Post";
+		node_a_post_post_id_2               [ label = "*post_id*" ];
+		node_a_post_oplist_2                [ label = "oplist" ];
+		node_a_post_parent_2                [ label = "parent" ];
+	}
+
+	subgraph cluster_oplist_post_3 {
+		label = "Post";
+		node_a_post_post_id_3               [ label = "*post_id*" ];
+		node_a_post_oplist_3                [ label = "oplist" ];
+		node_a_post_parent_3                [ label = "parent" ];
+	}
+
+	subgraph cluster_oplist_thread {
+		label = "Thread";
+		node_a_thread_thread_id              [ label = "*thread_id*" ];
+		node_a_thread_parent                 [ label = "parent" ];
+		node_a_thread_default_post_oplist    [ label = "default_post_oplist" ];
+		
+	}
+
+	subgraph cluster_oplist_board {
+		label = "Board";
+		node_a_board_board_id               [ label = "*board_id*" ];
+		node_a_board_default_post_oplist    [ label = "default_post_oplist" ];
+		
+	}
+
+	node_a_post_oplist_1 -> node_a_oplist_oplist_id_1;
+	node_a_post_oplist_2 -> node_a_oplist_oplist_id_1;
+	node_a_post_oplist_2 -> node_a_oplist_oplist_id_2 [ style = "dashed", label="copy on write"];
+	node_a_post_oplist_3 -> node_a_oplist_oplist_id_1;
+
+	node_a_post_parent_1 -> node_a_thread_thread_id;
+	node_a_post_parent_2 -> node_a_thread_thread_id;
+	node_a_post_parent_3 -> node_a_thread_thread_id;
+	node_a_thread_parent -> node_a_board_board_id;
+
+	node_a_oplist_oplist_default_1 -> node_a_thread_default_post_oplist [ style = "dashed", constraint = no ];
+
+	node_a_oplist_oplist_default_2 -> node_a_thread_default_post_oplist [ style = "dashed", constraint = no ];
+
+	node_a_oplist_oplist_id_1 -> node_a_board_default_post_oplist [ dir = back ];
+
+	node_a_thread_default_post_oplist -> node_a_board_default_post_oplist;
+
+
+
+}

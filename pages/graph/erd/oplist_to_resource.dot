@@ -1,0 +1,27 @@
+#dot
+strict digraph g {
+	node [ shape = box ];
+	nodesep = 0.1;
+	ranksep = 1;
+
+	subgraph cluster_oplist_1 {
+		label = "Oplist (of Oplist)";
+		node_a_oplist_oplist_id           [ label = "*oplist_id*" ];
+		node_a_oplist_oplist              [ label = "oplist" ];
+	}
+
+	subgraph cluster_oplist_2 {
+		label = "Oplist (of Other Resouces)";
+		node_a_oplist_oplist_id_2         [ label = "*oplist_id*" ];
+		node_a_oplist_oplist_2            [ label = "oplist" ];
+	}
+
+	subgraph cluster_oplist_res {
+		label = "Other Resouces(Post, Thread ...)";
+		node_a_res_resid               [ label = "*id*" ];
+		node_a_res_oplist              [ label = "oplist" ];
+	}
+
+	node_a_oplist_oplist_2 -> node_a_oplist_oplist_id;
+	node_a_res_oplist -> node_a_oplist_oplist_id_2;
+}

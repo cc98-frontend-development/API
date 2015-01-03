@@ -1,3 +1,2 @@
 #/bin/bash
-dot -Tpng -O $1
-rename -f 's/.dot//g' $1.png 
+dot -Tpng -O $1 && rename -f 's/.dot//g' $1.png 

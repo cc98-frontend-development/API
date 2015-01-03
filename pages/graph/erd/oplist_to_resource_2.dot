@@ -1,0 +1,55 @@
+#dot
+strict digraph g {
+	node [ shape = box ];
+	nodesep = 0.1;
+	ranksep = 1;
+
+	subgraph cluster_oplist_3 {
+		label = "Oplist (of Thread Oplist and Board)";
+		node_a_oplist_oplist_id_3           [ label = "*oplist_id*" ];
+		node_a_oplist_oplist_3              [ label = "oplist" ];
+	}
+
+	subgraph cluster_oplist_2 {
+		label = "Oplist (of Post Oplist and Thread)";
+		node_a_oplist_oplist_id_2         [ label = "*oplist_id*" ];
+		node_a_oplist_oplist_2            [ label = "oplist" ];
+	}
+
+	subgraph cluster_oplist_1 {
+		label = "Oplist (of Post)";
+		node_a_oplist_oplist_id_1         [ label = "*oplist_id*" ];
+		node_a_oplist_oplist_1            [ label = "oplist" ];
+	}
+
+	subgraph cluster_oplist_post {
+		label = "Post";
+		node_a_post_post_id               [ label = "*post_id*" ];
+		node_a_post_oplist                [ label = "oplist" ];
+		node_a_post_parent                [ label = "parent" ];
+	}
+
+	subgraph cluster_oplist_thread {
+		label = "Thread";
+		node_a_thread_thread_id           [ label = "*thread_id*" ];
+		node_a_thread_oplist              [ label = "oplist" ];
+		node_a_thread_parent              [ label = "parent" ];
+	}
+
+	subgraph cluster_oplist_board {
+		label = "Board";
+		node_a_board_board_id              [ label = "*board_id*" ];
+		node_a_board_oplist                [ label = "oplist" ];
+		node_a_board_parent                [ label = "parent" ];
+	}
+
+	node_a_post_oplist -> node_a_oplist_oplist_id_1;
+	node_a_oplist_oplist_1 -> node_a_oplist_oplist_id_2;
+	node_a_post_parent -> node_a_thread_thread_id;
+
+	node_a_thread_oplist -> node_a_oplist_oplist_id_2;
+	node_a_oplist_oplist_2 -> node_a_oplist_oplist_id_3;
+	node_a_thread_parent -> node_a_board_board_id;
+
+	node_a_board_oplist -> node_a_oplist_oplist_id_3;
+}
