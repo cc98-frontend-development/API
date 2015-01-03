@@ -138,7 +138,7 @@ GET方法用于获取资源。
 为了避免频繁刷新带来的资源浪费，回复列表的cache策略稍有改动：
 \alert[info]{
 默认max-age:minutes，无需验证，可以获得全局的回复列表\newline
-有parent筛选器时，max-age:days, must-revalidate，获得某一讨论的回复列表}
+有parent过滤器时，max-age:days, must-revalidate，获得某一讨论的回复列表}
 
 获取资源列表时使用\@/resources/threads\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=invtime&count=20&offset=0\@。
 

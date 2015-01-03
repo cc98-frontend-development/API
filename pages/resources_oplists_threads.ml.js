@@ -11,7 +11,7 @@ Post oplist支持的过滤器：
 \list*{
     \* \@?client={client}\@：特定客户端的权限，默认客户端为\@"cc98web"\@
     \* \@?user={user}&user_type={user_type}\@：特定用户（用户组或代理组）对此thread的操作权限列表，其中\@user_type\@可取的值为\@"NORMAL"\@\@"GROUP"\@\@"PROXY"\@，不用此过滤器时显示完整的oplist
-    \* \@?format={type}\@：输出不同的格式，\@type\@可以为\@"json"\@或\@"text"\@，默认为\@"json"\@
+    \* \@?format={type}\@：输出不同的格式，\@type\@可以为\@"full"\@或\@"calculated"\@，默认为\@"calculated"\@
 }
 
 \h4{资源访问方法：OPTIONS}
@@ -51,7 +51,46 @@ GET方法用于获取资源。
 
 这个回复表示：通过\@"/resources/oplists/threads/1361"\@访问了1361号讨论的oplist，该oplist为284号，该oplist(284)的上级oplist(board)是25号，该oplist(284)同时也是同一board中的默认oplist(\@default == oplist_id\@)，并不从上级(boards)继承而来(\@!is_heritage\@)，而是这个board单独指定的。
 
-\@ops\@根据筛选器\@?format\@不同分为两种表现形式。参见\link+[oplist]{/#/permission_oplist.ml.js}
+\@ops\@根据过滤器\@?format\@不同分为：
+\list*{
+	\* \@full\@: 参见\link+[oplist]{/#/permission_oplist.ml.js}
+	\* \@calculated\@: 根据指定的\@?user\@过滤器（默认为当前用户），计算出当前的操作权限列表。返回的\@user\@项的格式为\@user(usergroup)\@。
+}
+
+例如，用户名为xxx的用户是这个讨论的作者，他的修改讨论标题的权限这样表示:
+
+\@full\@是完整的权限表，用户
+\code+[json]{begin}
+	...
+    "ops":[
+        {
+            "deny": false,
+            "op": "title",
+            "except": false,
+            "user": "author",
+            "user_type": "PROXY",
+            "log_level": "LOG"
+        },
+        {...},
+        ...
+      ]
+\code+{end}
+
+\@calculated\@是当前用户进过计算的权限表，用户所属的权限表中的用户组名和类型在用户名的括号中标出，没有\@user_type\@和\@except\@这两项。
+\code+[json]{begin}
+	...
+    "ops":[
+        {
+            "deny": false,
+            "op": "title",
+            "user": "xxx($author)",
+            "log_level": "LOG"
+        },
+        {...},
+        ...
+      ]
+\code+{end}
+
 
 \h4{针对thread的操作}
 \table{begin}
