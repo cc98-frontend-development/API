@@ -166,23 +166,5 @@ HTTP 状态码在\link+[RFC2612的第10节]{http://www.w3.org/Protocols/rfc2616/
 \table{end}
 
 \h6{错误信息}
-当回复的状态码为4XX、5XX时，可以在内容里进一步给出错误的原因和处理提示。
-
-通用的格式为：
-
-\code+[json]{begin}
-{ "error":[
-    {
-        "error_type": "error type 1",
-        "message": "message for type 1",
-        "info": {information to be passed}},
-    {
-        "error_type": "error type 2",
-        "message": "message for type 2",
-        "info": {information to be passed}}]
-}
-
-\code+{end}
-
-其中\@error_type\@，为固定的错误类型，用于分辨错误；\@message\@是推荐显示给用户的信息；而\@info\@是帮助客户端进一步处理错误的其他信息，\@info\@是一个Object，内部数据结构在不同请求中有不同的约定。
+当回复的状态码为4XX、5XX时，可以在内容里进一步给出错误的原因和处理提示。具体参看\link+[JSON API]{#/basic_json.ml.js}。
 
