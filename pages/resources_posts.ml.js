@@ -18,20 +18,16 @@ CREATE TABLE Posts(
     Parent int NOT NULL,
     ReplyTo int NOT NULL,
     Oplist int NOT NULL,
+    Author int NOT NULL,
     Enabled bit NOT NULL,
     Hidden bit NOT NULL,
     Content nvarchar(max) NOT NULL,
     Time datetime NOT NULL,
-    Author int NOT NULL,
 
-    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId)
-        WITH (
-            FILLFACTOR=95,
-            PAD_INDEX=ON,
-            IGNORE_DUP_KEY=OFF,
-            STATISTICS_NORECOMPUTE=OFF,
-            ALLOW_ROW_LOCKS=ON,
-            ALLOW_PAGE_LOCKS=ON),
+    INDEX IDX_FK_Parent (Parent),
+    INDEX IDX_FK_Author (Author),
+
+    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC),
     CONSTRAINT FK_Parent FOREIGN KEY (Parent)
         REFERENCES Threads (ThreadId)
         ON UPDATE CASCADE
@@ -47,8 +43,8 @@ CREATE TABLE Posts(
     CONSTRAINT FK_Author FOREIGN KEY (Author)
         REFERENCES Users (UserId)
         ON UPDATE CASCADE
-        ON DELETE CASCADE,
-)
+        ON DELETE CASCADE
+);
 
 \code+{end}
 
@@ -61,6 +57,8 @@ CREATE TABLE Posts(
         String parent
         String reply_to
         String oplist
+        String author
+        String author_name          # computed, i.e. /resources/users/{author}:name
         String default_post_oplist  # computed, i.e. /resources/threads/{parent}:default_post_oplist
         Number rank_score           # computed, i.e. /resources/stats/posts/{id}:rank_score
         Boolean enabled   
@@ -68,8 +66,6 @@ CREATE TABLE Posts(
         Boolean anonymous           # computed, i.e. /resources/threads/{parent}:anonymous
         String content
         String time                 # ISO 8601 format
-        String author
-        String author_name          # computed, i.e. /resources/users/{author}:name
 
 \code+{end}
 
@@ -90,6 +86,30 @@ CREATE TABLE Posts(
     \* \@anonymous\@，是否匿名，由上级资源（讨论）指定，默认为false，为true时，author为空，author_name为hashed
     \* \@author_name\@，储存于\@/resources/users/{author}:name\@
 }
+
+返回数据的SQL例：
+\code+[sql]{begin}
+
+SELECT
+    p.PostId AS Id,
+    p.Parent AS Parent,
+    p.ReplyTo AS ReplyTo,
+    p.Oplist AS Oplist,
+    p.Enabled AS Enabled,
+    p.Hidden AS Hidden,
+    p.Content AS Content,
+    p.Author AS Author,
+    p.Time AS Time,
+    u.Name AS AuthorName,
+    t.DefaultPostOplist AS DefaultPostOplist,
+    t.Anonymous AS Anonymous,
+    s.RankScore AS RankScore
+FROM Posts p
+    INNER JOIN Users u ON u.UserId = p.Author
+    INNER JOIN Threads t ON t.ThreadId = p.Parent
+    INNER JOIN PostStats s on s.PostId = p.PostId
+WHERE p.PostId = '123'
+\code+{end}
 
 \h4{入口和过滤器}
 
