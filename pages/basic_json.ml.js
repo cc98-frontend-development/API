@@ -10,7 +10,7 @@ URL模板由\@{name}\@表示需要替换的内容，其中的变量名则为JSON
     "posts": {
         "id": "152",
         ...},
-    "self": "posts/{posts.id}",
+    "self": "posts/{id}",
     "base": "/resources/"
 }
 
@@ -64,8 +64,8 @@ URL模板由\@{name}\@表示需要替换的内容，其中的变量名则为JSON
     "posts": {
         "id": "152",
         ...},
-    "self": "posts/{posts.id}",
-    "source": "posts/{posts.id}",
+    "self": "posts/{id}",
+    "source": "posts/{id}",
     "base": "/resources/"
 }
 
@@ -82,7 +82,7 @@ URL模板由\@{name}\@表示需要替换的内容，其中的变量名则为JSON
             "id": "153",
             ...},
         ...],
-    "item": "posts/{posts.id}",
+    "item": "posts/{id}",
     "self": "posts/?parent={$parent}&count={$count}&offset={$offset}",
     "source": "posts/",
     "base": "/resources/",
@@ -102,18 +102,6 @@ URL模板由\@{name}\@表示需要替换的内容，其中的变量名则为JSON
         "last_page": {
             "href": "posts/?parent={$parent}&count={$count}&offset=83",
             "method": "GET"
-        },
-        "post": {
-            "href": "posts/",
-            "method": "POST"
-        },
-        "edit": {
-            "href": "posts/{posts.id}",
-            "method": "PUT"
-        },
-        "delete": {
-            "href": "posts/{posts.id}",
-            "method": "DELETE"
         }
     }
 }

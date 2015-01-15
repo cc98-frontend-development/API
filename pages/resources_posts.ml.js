@@ -16,7 +16,7 @@ SQL Server:
 CREATE TABLE Posts(
     PostId int NOT NULL IDENTITY,
     Parent int NOT NULL,
-    ReplyTo int NOT NULL,
+    ReplyTo int NULL,
     Oplist int NOT NULL,
     Author int NOT NULL,
     Enabled bit NOT NULL,
@@ -24,8 +24,8 @@ CREATE TABLE Posts(
     Content nvarchar(max) NOT NULL,
     Time datetime NOT NULL,
 
-    INDEX IDX_FK_Parent (Parent),
-    INDEX IDX_FK_Author (Author),
+    INDEX IDX_Parent (Parent),
+    INDEX IDX_Author (Author),
 
     CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC),
     CONSTRAINT FK_Parent FOREIGN KEY (Parent)
@@ -33,9 +33,10 @@ CREATE TABLE Posts(
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT FK_ReplyTo FOREIGN KEY (ReplyTo)
+	-- NULL means target deleted
         REFERENCES Posts (PostId)
         ON UPDATE CASCADE
-        ON DELETE CASCADE,
+        ON DELETE SET NULL,
     CONSTRAINT FK_Oplist FOREIGN KEY (Oplist)
         REFERENCES Oplists (OplistId)
         ON UPDATE CASCADE
@@ -52,20 +53,20 @@ CREATE TABLE Posts(
 \@computed\@表示后端在读时计算出，在API层面只读。
 
 \code+[coffee]{begin}
-    class Post 
-        String id
-        String parent
-        String reply_to
-        String oplist
-        String author
-        String author_name          # computed, i.e. /resources/users/{author}:name
-        String default_post_oplist  # computed, i.e. /resources/threads/{parent}:default_post_oplist
-        Number rank_score           # computed, i.e. /resources/stats/posts/{id}:rank_score
-        Boolean enabled   
-        Boolean hidden    
-        Boolean anonymous           # computed, i.e. /resources/threads/{parent}:anonymous
-        String content
-        String time                 # ISO 8601 format
+class Post
+    String id
+    String parent
+    String reply_to
+    String oplist
+    String author
+    String author_name          # computed, i.e. /resources/users/{author}:name
+    String default_post_oplist  # computed, i.e. /resources/threads/{parent}:default_post_oplist
+    Number rank_score           # computed, i.e. /resources/stats/posts/{id}:rank_score
+    Boolean enabled   
+    Boolean hidden    
+    Boolean anonymous           # computed, i.e. /resources/threads/{parent}:anonymous
+    String content
+    String time                 # ISO 8601 format
 
 \code+{end}
 
@@ -131,86 +132,27 @@ WHERE p.PostId = '123'
 
 OPTIONS用于获得用户对当前资源的访问方法，通过报头Allow字段返回。
 
-其中，OPTIONS方法一直可用，其他方法根据用户当前的返回。
+OPTIONS不返回具体的资源，但返回一系列资源可以使用的外部资源和调用方法。
 
+其中，OPTIONS方法一直可用，其他方法根据用户当前的返回。
 
 比如：
 
 \code+[http]{begin}
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8; api_version=1.0
-Content-Length: 0
+Content-Length: XXX
 Cache-control: max-age=2592000, must-revalidate
 Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 Allow: OPTIONS, GET
 \code+{end}
-
-\h4{获取资源：GET}
-\alert[info]{max-age:days, must-revalidate}
-
-GET方法用于获取资源。
-
-获取特定回复时使用\@/resources/posts/{$id}\@。
-
-返回的JSON格式为：
-
 \code+[json]{begin}
+HTTP/1.1 200 OK
 {
-    "posts": {
-        "id": "1361"
-        ...
-    },
-    "links": {...},
-    "self": "posts/{posts.id}",
-    "source": "posts/{posts.id}",
-    "base": "/resources/"
-}
-
-\code+{end}
-
-为了避免频繁刷新带来的资源浪费，回复列表的cache策略稍有改动：
-\alert[info]{
-默认max-age:minutes，无需验证，可以获得全局的回复列表\newline
-有parent过滤器时，max-age:days, must-revalidate，获得某一讨论的回复列表}
-
-获取资源列表时使用\@/resources/posts\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=time&count=20&offset=0\@。
-
-返回的JSON格式为：
-\code+[json]{begin}
-
-{
-    "posts": [
-        {
-            "post": "1361"
-            ...
-        },
-        {
-            "post": "1363"
-            ...
-        },
-        ...
-    ],
+    "self": "posts",
+    "source": "posts",
+    "base": "/resources/",
     "links": {
-        "first_page": {
-            "href": "posts?parent=161&sort_by=time&count=20&offset=0",
-            "method": "GET",
-            "description": "第一页"
-        },
-        "prev_page": {
-            "href": null,
-            "method": "GET",
-            "description": "前一页"
-        },
-        "next_page": {
-            "href": "posts?parent=161&sort_by=time&count=20&offset=2",
-            "method": "GET",
-            "description": "后一页"
-        },
-        "last_page": {
-            "href": "posts?parent=161&sort_by=time&count=20&offset=223",
-            "method": "GET",
-            "description": "最后页"
-        },
         "poststats": {
             "href": "poststats/{id}",
             "method": "GET",
@@ -274,20 +216,95 @@ GET方法用于获取资源。
         "parent": {
             "href": "threads/{parent}",
             "method": "GET",
-            "description": "被回复的帖子"
+            "description": "回复所在的讨论"
         },
         "oplist": {
             "href": "oplists/{oplist}",
             "method": "GET",
             "description": "回复的权限"
         },
+        "default_post_oplist": {
+            "href": "oplists/{default_post_oplist}",
+            "method": "GET",
+            "description": "讨论下默认的回复的权限"
+        },
         "author": {
             "href": "users/{author}",
             "method": "GET",
             "description": "回复的作者"
         }
+    }
+}
+\code+{end}
+
+\h4{获取资源：GET}
+\alert[info]{max-age:days, must-revalidate}
+
+GET方法用于获取资源。
+
+获取特定回复时使用\@/resources/posts/{$id}\@。
+
+返回的JSON格式为：
+
+\code+[json]{begin}
+{
+    "posts": {
+        "id": "1361"
+        ...
     },
-    "item": "posts/{posts.id}",
+    "links": {...},
+    "self": "posts/{id}",
+    "source": "posts/{id}",
+    "base": "/resources/"
+}
+
+\code+{end}
+
+为了避免频繁刷新带来的资源浪费，回复列表的cache策略稍有改动：
+\alert[info]{
+默认max-age:minutes，无需验证，可以获得全局的回复列表\newline
+有parent过滤器时，max-age:days, must-revalidate，获得某一讨论的回复列表}
+
+获取资源列表时使用\@/resources/posts\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=time&count=20&offset=0\@。
+
+返回的JSON格式为：
+\code+[json]{begin}
+
+{
+    "posts": [
+        {
+            "post": "1361"
+            ...
+        },
+        {
+            "post": "1363"
+            ...
+        },
+        ...
+    ],
+    "links": {
+        "first_page": {
+            "href": "posts?parent=161&sort_by=time&count=20&offset=0",
+            "method": "GET",
+            "description": "第一页"
+        },
+        "prev_page": {
+            "href": null,
+            "method": "GET",
+            "description": "前一页"
+        },
+        "next_page": {
+            "href": "posts?parent=161&sort_by=time&count=20&offset=2",
+            "method": "GET",
+            "description": "后一页"
+        },
+        "last_page": {
+            "href": "posts?parent=161&sort_by=time&count=20&offset=23",
+            "method": "GET",
+            "description": "最后页"
+        }
+	},
+    "item": "posts/{id}",
     "self": "posts?parent=161&sort_by=time&count=20&offset=0",
     "source": "posts",
     "base": "/resources/"
@@ -298,6 +315,7 @@ GET方法用于获取资源。
 \alert{
 小心处理匿名情况：后端需要检查用户是否有parent（讨论）oplist中定义的view_anonymous权限，如果有，返回author和author_name；如果没有，则author为空，author_name由原始的用户名hash而来。
 }
+links包括了页面间跳转的方法。
 
 
 \h4{新建资源：POST}
