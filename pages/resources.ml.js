@@ -16,9 +16,11 @@ URL: \@https://api.cc98.org/resources\@
 
 \@Allow\@：当前允许的方法，包括\@OPTIONS\@和\@GET\@。
 
-\@Link: </resources>; rel="self"; method="GET"\@
-
-无报文。
+\code+[json]{begin}
+{ "links": {
+    }
+}
+\code+{end}
 
 \h4{读取资源列表：GET} 
 
@@ -36,29 +38,28 @@ URL: \@https://api.cc98.org/resources\@
 
 报文：
 \code+[json]{begin}
-{ "resources": {
-    "collection":[
-        { "rel": "link", "href": "/resources/boards", "title": "板块" },
-        { "rel": "link", "href": "/resources/threads", "title": "讨论" },
-        { "rel": "link", "href": "/resources/posts", "title": "回复" },
-        { "rel": "link", "href": "/resources/oplists", "title": "操作权限列表" },
-        { "rel": "link", "href": "/resources/users", "title": "用户" },
-        { "rel": "link", "href": "/resources/files", "title": "文件" },
-        { "rel": "link", "href": "/resources/stats", "title": "统计" }],
-    "id": "/resources",
-    "source": "/resources"
-    }
+{ 
+    "resources": [
+        { "id": "boards",      "href": "/resources/boards", "title": "板块" },
+        { "id": "threads",     "href": "/resources/threads", "title": "讨论" },
+        { "id": "posts",       "href": "/resources/posts", "title": "回复" },
+        { "id": "oplists",     "href": "/resources/oplists", "title": "操作权限列表" },
+        { "id": "users",       "href": "/resources/users", "title": "用户" },
+        { "id": "files",       "href": "/resources/files", "title": "文件" },
+        { "id": "stats",       "href": "/resources/stats", "title": "统计" }
+    ],
+    "self": "/resources/",
+    "source": "/resources/",
+    "base": "/"
 }
 
 \code+{end}
 
 \h5{资源类型：源和引用}
 
-\@source\@表示该资源的固定来源，而\@id\@表示该资源的标识符。
+\@source\@表示该资源的固定来源，而\@self\@表示该资源的此次访问标识符。
 
-源资源表示该资源指向的实体是相对固定的，表现为其\@id\@和\@source\@相同，比如代表用户的资源就是源资源。
+源资源表示该资源指向的实体是相对固定的，表现为其\@self\@和\@source\@相同，比如代表用户的资源就是源资源。
 
-引用资源表示资源指向的实体是相对不固定的，表现为其\@id\@和\@source\@不相同，比如代表最新贴子的资源就是引用资源。
-
-上面的json代码表示的resources资源是源资源（\@id\@与\@source\@相同），它表现为在\@collection\@中，包括了一系列子资源的链接（\@"rel":"link"\@），链接的具体指向（e.g.\@"href":"/resources/boards"\@），子资源的人类可读的表示（e.g.\@"title":"板块"\@）。
+引用资源表示资源指向的实体是相对不固定的，表现为其\@self\@和\@source\@不相同，比如代表最新贴子的资源就是引用资源。
 
