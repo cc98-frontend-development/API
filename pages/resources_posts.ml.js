@@ -33,7 +33,7 @@ CREATE TABLE Posts(
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT FK_ReplyTo FOREIGN KEY (ReplyTo)
-	-- NULL means target deleted
+    -- NULL means target deleted
         REFERENCES Posts (PostId)
         ON UPDATE CASCADE
         ON DELETE SET NULL,
@@ -79,7 +79,7 @@ class Post
 
 \list*{
     \* \@parent\@，指向上级（讨论）
-	\* \@reply_to\@，回复对象（回复），默认为\@/resources/threads/{parent}:first_post\@
+    \* \@reply_to\@，回复对象（回复），默认为\@/resources/threads/{parent}:first_post\@
     \* \@default_post_oplist\@，储存于\@/resources/threads/{parent}:default_post_oplist\@
     \* \@rank_score\@，用于排序的评分，储存于\@/resources/stats/posts/{id}:rank_score\@
     \* \@enabled\@通常为true，当为false时表示这个回复被关闭，用于占楼但不显示
@@ -91,26 +91,25 @@ class Post
 返回数据的SQL例：
 \code+[sql]{begin}
 
-CREATE VIEW PostsView
-AS 
+CREATE VIEW PostsView AS
 SELECT
     p.PostId AS Id,
-    p.Parent AS Parent,
-    p.ReplyTo AS ReplyTo,
-    p.Oplist AS Oplist,
-    p.Enabled AS Enabled,
-    p.Hidden AS Hidden,
-    p.Content AS Content,
-    p.Author AS Author,
-    p.Time AS Time,
+    p.Parent,
+    p.ReplyTo,
+    p.Oplist,
+    p.Enabled,
+    p.Hidden,
+    p.Content,
+    p.Author,
+    p.Time,
     u.Name AS AuthorName,
-    t.DefaultPostOplist AS DefaultPostOplist,
-    t.Anonymous AS Anonymous,
-    s.RankScore AS RankScore
-FROM Posts p
-    INNER JOIN Users u ON u.UserId = p.Author
-    INNER JOIN Threads t ON t.ThreadId = p.Parent
-    INNER JOIN PostStats s on s.PostId = p.PostId,
+    t.DefaultPostOplist,
+    t.Anonymous,
+    s.RankScore
+FROM Posts AS p
+    INNER JOIN Users AS u ON u.UserId = p.Author
+    INNER JOIN Threads AS t ON t.ThreadId = p.Parent
+    INNER JOIN PostStats AS s on s.PostId = p.PostId,
 \code+{end}
 
 \h4{入口和过滤器}
@@ -304,7 +303,7 @@ GET方法用于获取资源。
             "method": "GET",
             "description": "最后页"
         }
-	},
+    },
     "item": "posts/{id}",
     "self": "posts?parent=161&sort_by=time&count=20&offset=0",
     "source": "posts",

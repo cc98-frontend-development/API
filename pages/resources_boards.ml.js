@@ -79,7 +79,7 @@ class Boards
     \* \@default_board_oplist\@，板块的默认oplist，储存于\@/resources/boards/{parent}:default_board_oplist\@
     \* \@default_thread_oplist\@，讨论的默认oplist
     \* \@default_post_oplist\@，讨论中回复的默认oplist
-	\* \@icon_url\@，图标的访问地址
+    \* \@icon_url\@，图标的访问地址
 }
 
 \h4{入口和过滤器}

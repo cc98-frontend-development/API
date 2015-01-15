@@ -161,29 +161,28 @@ class Highlight
 返回数据的SQL例：
 \code+[sql]{begin}
 
-CREATE VIEW ThreadsView
-AS 
+CREATE VIEW ThreadsView AS
 SELECT
     t.ThreadId AS Id,
-    t.Parent AS Parent,
-    t.Oplist AS Oplist,
-    b.DefaultThreadOplist AS DefaultThreadOplist,
-    t.DefaultPostOplist AS DefaultPostOplist,
-    t.FirstPost AS FirstPost
-    t.Title AS Title
-    t.Type AS Type
-    t.TopType AS TopType
-    t.GoodType AS GoodType
-    t.Anonymous AS Anonymous,
-    t.NoPost AS NoPost
-    p.Author AS Author,
+    t.Parent,
+    t.Oplist,
+    b.DefaultThreadOplist,
+    t.DefaultPostOplist,
+    t.FirstPost,
+    t.Title,
+    t.Type,
+    t.TopType,
+    t.GoodType,
+    t.Anonymous,
+    t.NoPost,
+    p.Author,
     u.Name AS AuthorName,
-    t.Time AS Time,
-    t.Highlight AS Highlight,
-FROM Posts p
-    INNER JOIN Boards b on b.BoardId = t.Parent
-    INNER JOIN Posts p ON p.Parent = t.ThreadId
-    INNER JOIN Users u ON u.UserId = p.Author
+    t.Time,
+    t.Highlight
+FROM Posts AS p
+    INNER JOIN Boards AS b on b.BoardId = t.Parent
+    INNER JOIN Posts AS p ON p.Parent = t.ThreadId
+    INNER JOIN Users AS u ON u.UserId = p.Author
 \code+{end}
 \h4{入口和过滤器}
 
