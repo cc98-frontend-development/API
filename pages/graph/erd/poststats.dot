@@ -6,7 +6,7 @@ strict digraph g {
 
 	subgraph cluster_post_stat {
 		label = "PostStat";
-		node_a_post_stat_post_id          [ label = "*post_id*" ];
+		node_a_post_stat_id               [ label = "*id*" ];
 		node_a_post_stat_rank_score       [ label = "rank_score" ];
 		node_a_post_stat_rank_up          [ label = "rank_up"];
 		node_a_post_stat_rank_down        [ label = "rank_down"];
@@ -16,10 +16,10 @@ strict digraph g {
 
 	subgraph cluster_post {
 		label = "Post";
-		node_a_post_post_id             [ label = "*post_id*" ];
+		node_a_post_id                  [ label = "*id*" ];
 		node_a_post_rank_score          [ label = "-rank_score-" ];
 	}
 
-	node_a_post_stat_post_id -> node_a_post_post_id;
+	node_a_post_stat_id -> node_a_post_id;
 	node_a_post_rank_score -> node_a_post_stat_rank_score [ style = dashed ];
 }
