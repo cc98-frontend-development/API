@@ -114,7 +114,7 @@ FROM Posts AS p
 
 \h4{入口和过滤器}
 
-特定回复的资源的固定入口为\@/resources/posts/{$id}\@，回复列表资源的固定入口为\@/resources/posts\@。
+特定回复的资源的固定入口为\@/resources/posts/{$id}\@，回复列表资源的固定入口为\@/resources/posts/\@。
 
 回复列表资源支持的过滤器：
 \list#{
@@ -149,8 +149,8 @@ Allow: OPTIONS, GET
 \code+[json]{begin}
 HTTP/1.1 200 OK
 {
-    "self": "posts",
-    "source": "posts",
+    "self": "posts/",
+    "source": "posts/",
     "base": "/resources/",
     "links": {
         "poststats": {
@@ -265,7 +265,7 @@ GET方法用于获取资源。
 默认max-age:minutes，无需验证，可以获得全局的回复列表\newline
 有parent过滤器时，max-age:days, must-revalidate，获得某一讨论的回复列表}
 
-获取资源列表时使用\@/resources/posts\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=time&count=20&offset=0\@。
+获取资源列表时使用\@/resources/posts/\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=time&count=20&offset=0\@。
 
 返回的JSON格式为：
 \code+[json]{begin}
@@ -284,7 +284,7 @@ GET方法用于获取资源。
     ],
     "links": {
         "first_page": {
-            "href": "posts?parent=161&sort_by=time&count=20&offset=0",
+            "href": "posts/?parent=161&sort_by=time&count=20&offset=0",
             "method": "GET",
             "description": "第一页"
         },
@@ -294,19 +294,19 @@ GET方法用于获取资源。
             "description": "前一页"
         },
         "next_page": {
-            "href": "posts?parent=161&sort_by=time&count=20&offset=2",
+            "href": "posts/?parent=161&sort_by=time&count=20&offset=2",
             "method": "GET",
             "description": "后一页"
         },
         "last_page": {
-            "href": "posts?parent=161&sort_by=time&count=20&offset=23",
+            "href": "posts/?parent=161&sort_by=time&count=20&offset=23",
             "method": "GET",
             "description": "最后页"
         }
     },
     "item": "posts/{id}",
-    "self": "posts?parent=161&sort_by=time&count=20&offset=0",
-    "source": "posts",
+    "self": "posts/?parent=161&sort_by=time&count=20&offset=0",
+    "source": "posts/",
     "base": "/resources/"
 }
 
@@ -322,7 +322,7 @@ links包括了页面间跳转的方法。
 
 \alert[info]{no-cache, no-store}
 
-新建回复通过向\@/resources/posts\@使用POST方法，发送如下格式的JSON：
+新建回复通过向\@/resources/posts/\@使用POST方法，发送如下格式的JSON：
 
 \code+[json]{begin}
 {
@@ -333,7 +333,7 @@ links包括了页面间跳转的方法。
 
 \code+{end}
 
-如果向\@/resources/posts?parent={$parent}\@使用POST方法，表示向\@$parent\@讨论中新建回复，等同于指定了\@parent\@项目，下述的\@parent\@项将被忽略。
+如果向\@/resources/posts/?parent={$parent}\@使用POST方法，表示向\@$parent\@讨论中新建回复，等同于指定了\@parent\@项目，下述的\@parent\@项将被忽略。
 
 如果向\@/resources/posts/{$id}\@使用POST方法，表示回复该回复帖，等同于指定了\@reply_to\@项目，下述的\@reply_to\@项将被忽略。
 

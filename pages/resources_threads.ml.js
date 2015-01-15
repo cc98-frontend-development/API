@@ -219,8 +219,8 @@ Allow: OPTIONS, GET
 \code+[json]{begin}
 HTTP/1.1 200 OK
 {
-    "self": "threads",
-    "source": "threads",
+    "self": "threads/",
+    "source": "threads/",
     "base": "/resources/",
     "links": {
         "threadstats": {
@@ -339,7 +339,7 @@ GET方法用于获取资源。
 默认max-age:minutes，无需验证，可以获得全局的回复列表\newline
 有parent过滤器时，max-age:days, must-revalidate，获得某一讨论的回复列表}
 
-获取资源列表时使用\@/resources/threads\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=invtime&count=20&offset=0\@。
+获取资源列表时使用\@/resources/threads/\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=invtime&count=20&offset=0\@。
 
 返回的JSON格式为：
 
@@ -359,7 +359,7 @@ GET方法用于获取资源。
     ],
     "links": {
         "first_page": {
-            "href": "threads?parent=14&sort_by=invtime&count=20&offset=0",
+            "href": "threads/?parent=14&sort_by=invtime&count=20&offset=0",
             "method": "GET",
             "description": "第一页"
         },
@@ -369,19 +369,19 @@ GET方法用于获取资源。
             "description": "前一页"
         },
         "next_page": {
-            "href": "threads?parent=14&sort_by=invtime&count=20&offset=2",
+            "href": "threads/?parent=14&sort_by=invtime&count=20&offset=2",
             "method": "GET",
             "description": "后一页"
         },
         "last_page": {
-            "href": "threads?parent=14&sort_by=invtime&count=20&offset=163",
+            "href": "threads/?parent=14&sort_by=invtime&count=20&offset=163",
             "method": "GET",
             "description": "最后页"
         }
     },
     "item": "threads/{threads.id}",
-    "self": "threads?parent=14&sort_by=invtime&count=20&offset=0",
-    "source": "threads",
+    "self": "threads/?parent=14&sort_by=invtime&count=20&offset=0",
+    "source": "threads/",
     "base": "/resources/"
 }
 
@@ -405,7 +405,7 @@ links包括了页面间跳转的方法。
 }
 \code+{end}
 
-如果向\@/resources/threads?parent={$parent}\@使用POST方法，表示向\@$parent\@版块中新建讨论，等同于指定了\@parent\@项目，下述的\@parent\@项将被忽略。
+如果向\@/resources/threads/?parent={$parent}\@使用POST方法，表示向\@$parent\@版块中新建讨论，等同于指定了\@parent\@项目，下述的\@parent\@项将被忽略。
 
 其中可以提供以下属性：
 \table{begin}
