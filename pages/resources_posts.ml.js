@@ -10,6 +10,7 @@
 
 \h5{建议数据库Schema}
 
+SQL Server:
 \code+[sql]{begin}
 
 CREATE TABLE Posts(
@@ -23,7 +24,14 @@ CREATE TABLE Posts(
     Time datetime NOT NULL,
     Author int NOT NULL,
 
-    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId),
+    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId)
+        WITH (
+            FILLFACTOR=95,
+            PAD_INDEX=ON,
+            IGNORE_DUP_KEY=OFF,
+            STATISTICS_NORECOMPUTE=OFF,
+            ALLOW_ROW_LOCKS=ON,
+            ALLOW_PAGE_LOCKS=ON),
     CONSTRAINT FK_Parent FOREIGN KEY (Parent)
         REFERENCES Threads (ThreadId)
         ON UPDATE CASCADE
@@ -39,7 +47,7 @@ CREATE TABLE Posts(
     CONSTRAINT FK_Author FOREIGN KEY (Author)
         REFERENCES Users (UserId)
         ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
 )
 
 \code+{end}
