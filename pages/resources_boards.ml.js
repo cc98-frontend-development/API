@@ -15,19 +15,61 @@
 SQL Server:
 \code+[sql]{begin}
 
-\@computed\@表示后端不储存该字段，仅仅在读时计算出，在API层面只读。
+CREATE TABLE Icons(
+    IconId int NOT NULL IDENTITY,
+    Icon varbinary(max) NOT NULL,
+    Description nvarchar(128) NULL DEFAULT NULL,
+    CONSTRAINT PK_IconId PRIMARY KEY CLUSTERED (IconId ASC),
+);
+
+CREATE TABLE Boards(
+    BoardsId int NOT NULL IDENTITY,
+    Parent int NULL,
+    -- Root boards's Parent is NULL,
+    Title nvarchar(64) NOT NULL,
+    Description nvarchar(256) NOT NULL,
+    Oplist int NOT NULL,
+    DefaultThreadOplist int NOT NULL,
+    DefaultPostOplist int NOT NULL
+    IconId int NOT NULL,
+    
+    INDEX IDX_Parent (Parent),
+    
+    CONSTRAINT PK_BoardId PRIMARY KEY CLUSTERED (BoardId ASC),
+    CONSTRAINT FK_Parent FOREIGN KEY (Parent)
+        REFERENCES Boards (BoardId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT FK_Oplist FOREIGN KEY (Oplist)
+        REFERENCES Oplists (OplistId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT FK_DefaultThreadOplist FOREIGN KEY (DefaultThreadOplist)
+        REFERENCES Oplists (OplistId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT FK_DefaultPostOplist FOREIGN KEY (DefaultPostOplist)
+        REFERENCES Oplists (OplistId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+\code+{end}
+
+\h5{JSON API}
+\@computed\@表示后端在读时计算出，在API层面只读。
 
 \code+[coffee]{begin}
-    class Boards
-        String boards_id                # /resources/boards/{board_id}
-        String parent                   # /resources/boards/{parent}, 0 or NULL
-        String title
-        String description
-        String oplist                   # /resources/oplists/{oplist}
-        String default_board_oplist     # computed, i.e. /resources/boards/{parent}:default_board_oplist, /resources/oplists/{default_board_oplist}
-        String default_thread_oplist    # /resources/oplists/{default_thread_oplist}
-        String default_post_oplist      # /resources/oplists/{default_post_oplist}
-
+class Boards
+    String boards_id                # /resources/boards/{board_id}
+    String parent                   # /resources/boards/{parent}, 0 or NULL
+    String title
+    String description
+    String oplist                   # /resources/oplists/{oplist}
+    String default_board_oplist     # computed, i.e. /resources/boards/{parent}:default_board_oplist, /resources/oplists/{default_board_oplist}
+    String default_thread_oplist    # /resources/oplists/{default_thread_oplist}
+    String default_post_oplist      # /resources/oplists/{default_post_oplist}
+    String icon_url
 \code+{end}
 
 \list*{
@@ -37,15 +79,16 @@ SQL Server:
     \* \@default_board_oplist\@，板块的默认oplist，储存于\@/resources/boards/{parent}:default_board_oplist\@
     \* \@default_thread_oplist\@，讨论的默认oplist
     \* \@default_post_oplist\@，讨论中回复的默认oplist
+	\* \@icon_url\@，图标的访问地址
 }
 
 \h4{入口和过滤器}
 
-特定板块资源的固定入口为\@/resources/boards/{board_id}\@，板块列表资源入口为\@/resources/boards\@，配合过滤器可以筛选出需要的板块列表。
+特定板块资源的固定入口为\@/resources/boards/{$id}\@，板块列表资源入口为\@/resources/boards\@，配合过滤器可以筛选出需要的板块列表。
 
 板块列表资源支持的过滤器：
 \list#{
-    \* \@?parent={parent}\@，某一板块下的讨论列表；
+    \* \@?parent={$parent}\@，某一板块下的讨论列表；
 }
 
 \h4{资源访问方法：OPTIONS}
@@ -60,50 +103,43 @@ OPTIONS用于获得用户对当前资源的访问方法，通过报头Allow字�
 
 GET方法用于获取资源。
 
-获取特定板块时使用\@/resources/boards/{board_id}\@。
+获取特定板块时使用\@/resources/boards/{$id}\@。
 
 返回的JSON格式为：
 
 \code+[json]{begin}
 {
     "boards": {
-        "board": {
-            "board_id": "11"
-            ...
-            },
-        "id": "/resources/boards/11",
-        "source": "/resources/boards/11"
-    }
+        "id": "11"
+        ...
+    },
+    "self": "boards/{id}",
+    "source": "boards/{id}",
+    "base": "/resources/"
 }
 
 \code+{end}
 
-获取板块列表时使用\@/resources/boards?parent={parent}\@。
+获取板块列表时使用\@/resources/boards?parent={$parent}\@。
 返回的JSON格式为：
 
 \code+[json]{begin}
 
 {
-    "boards": {
-        "collection": [
-            {
-                "board": {
-                    "board_id": "11"
-                    ...
-                    },
-                "id": "/resources/boards/11",
-                "source": "/resources/boards/11"
-            },
-            {
-                "board": {...},
-                "id": "/resources/boards/xxx",
-                "source": "/resources/boards/xxx"
-            },
-            ...],
-        "id": "/resources/boards?parent=6",
-        "source": "/resources/boards"
-    }
+    "boards": [
+        {
+            "id": "11"
+            ...
+        },
+        {
+            "id": "12"
+            ...
+        },
+        ...
+    ],
+    "self": "boards?parent=4",
+    "source": "boards",
+    "base": "/resources/"
 }
-
 
 \code+{end}

@@ -161,6 +161,8 @@ class Highlight
 返回数据的SQL例：
 \code+[sql]{begin}
 
+CREATE VIEW ThreadsView
+AS 
 SELECT
     t.ThreadId AS Id,
     t.Parent AS Parent,
@@ -182,7 +184,6 @@ FROM Posts p
     INNER JOIN Boards b on b.BoardId = t.Parent
     INNER JOIN Posts p ON p.Parent = t.ThreadId
     INNER JOIN Users u ON u.UserId = p.Author
-WHERE t.ThreadId = '123'
 \code+{end}
 \h4{入口和过滤器}
 

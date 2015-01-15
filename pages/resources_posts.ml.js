@@ -91,6 +91,8 @@ class Post
 返回数据的SQL例：
 \code+[sql]{begin}
 
+CREATE VIEW PostsView
+AS 
 SELECT
     p.PostId AS Id,
     p.Parent AS Parent,
@@ -108,8 +110,7 @@ SELECT
 FROM Posts p
     INNER JOIN Users u ON u.UserId = p.Author
     INNER JOIN Threads t ON t.ThreadId = p.Parent
-    INNER JOIN PostStats s on s.PostId = p.PostId
-WHERE p.PostId = '123'
+    INNER JOIN PostStats s on s.PostId = p.PostId,
 \code+{end}
 
 \h4{入口和过滤器}

@@ -6,7 +6,7 @@ strict digraph g {
 
 	subgraph cluster_post_1 {
 		label = "Post";
-		node_a_post_post_id             [ label = "*post_id*" ];
+		node_a_post_id                  [ label = "*id*" ];
 		node_a_post_parent              [ label = "parent" ];
 		node_a_post_reply_to            [ label = "reply_to" ];
 		node_a_post_oplist              [ label = "oplist" ];
@@ -23,51 +23,51 @@ strict digraph g {
 
 	subgraph cluster_post_stat {
 		label = "PostStat";
-		node_a_post_stat_post_id    [ label = "*post_id*" ];
+		node_a_post_stat_id         [ label = "*id*" ];
 		node_a_post_stat_rank_score [ label = "rank_score" ];
 	}
 
 	subgraph cluster_post_2 {
 		label = "Post";
-		node_a_post_post_id_2      [ label = "*post_id*" ];
+		node_a_post_id_2        [ label = "*id*" ];
 	}
 
 	subgraph cluster_thread {
 		label = "Thread";
-		node_a_thread_thread_id [ label = "*thread_id*" ];
+		node_a_thread_id        [ label = "*id*" ];
 		node_a_thread_default_post_oplist [ label = "default_post_oplist" ];
 		node_a_thread_anonymous [ label = "anonymous" ];
 	}
 
 	subgraph cluster_oplist {
 		label = "Oplist";
-		node_a_oplist_oplist_id [ label = "*oplist_id*" ];
+		node_a_oplist_id        [ label = "*id*" ];
 		node_a_oplist_oplist    [ label = "oplist" ];
 	}
 
 	subgraph cluster_oplist_2 {
 		label = "Oplist";
-		node_a_oplist_oplist_id_2 [ label = "*oplist_id*" ];
+		node_a_oplist_id_2 [ label = "*id*" ];
 	}
 
 	subgraph cluster_user {
 		label = "User";
-		node_a_user_user_id [ label = "*user_id*" ];
+		node_a_user_id [ label = "*id*" ];
 		node_a_user_name    [ label = "name" ];
 	}
 
 
-	node_a_post_parent -> node_a_thread_thread_id;
-	node_a_post_reply_to -> node_a_post_post_id_2;
-	node_a_post_oplist -> node_a_oplist_oplist_id [ label = "using\n default" ];
+	node_a_post_parent -> node_a_thread_id;
+	node_a_post_reply_to -> node_a_post_id_2;
+	node_a_post_oplist -> node_a_oplist_id [ label = "using\n default" ];
 	node_a_post_default_post_oplist -> node_a_thread_default_post_oplist [ style = dashed ];
 	node_a_post_anonymous -> node_a_thread_anonymous [style = dashed ];
 	node_a_post_rank_score -> node_a_post_stat_rank_score [style = dashed ];
-	node_a_post_author -> node_a_user_user_id;
+	node_a_post_author -> node_a_user_id;
 	node_a_post_author_name -> node_a_user_name     [ style = dashed ];
 
-	node_a_thread_default_post_oplist -> node_a_oplist_oplist_id;
-	node_a_oplist_oplist -> node_a_oplist_oplist_id_2;
+	node_a_thread_default_post_oplist -> node_a_oplist_id;
+	node_a_oplist_oplist -> node_a_oplist_id_2;
 
-	node_a_post_stat_post_id -> node_a_post_post_id;
+	node_a_post_stat_id -> node_a_post_id;
 }
