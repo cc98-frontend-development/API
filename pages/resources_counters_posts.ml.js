@@ -2,39 +2,6 @@
 
 \h4{数据结构}
 
-\h5{数据库Schema}
-\code+[sql]{begin}
-
-CREATE TABLE PostCounters(
-    PostId     int NOT NULL UNIQUE,
-    Parent     int NOT NULL,
-    UpNumber   int NOT NULL,
-    DownNumber int NOT NULL,
-    UpWeight   int NOT NULL,
-    DownWeight int NOT NULL,
-    Score      int NOT NULL DEFAULT 0,
-
-    INDEX IDX_Rank (Score DESC),
-
-    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC)
-    -- PostCounters and Posts are in a one-to-one relationship.
-    CONSTRAINT FK_PostId FOREIGN KEY (PostId)
-        REFERENCES Posts (PostId)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT FK_Parent FOREIGN KEY (Parent)
-        REFERENCES Threads (ThreadId)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT FK_Score FOREIGN KEY (Score)
-        REFERENCES PostStats (Score)
-        ON UPDATE CASCADE
-        ON DELETE SET DEFAULT,
-        -- update to the newest calculated result when PostStats updates
-);
-
-\code+{end}
-
 \h5{JSON API}
 \code+[coffee]{begin}
 
@@ -45,19 +12,48 @@ class PostCounter
     Number down_number
     Number up_weight
     Number down_weight
-    Number score
+    Number score           #computed, i.e. /resources/stats/post/{id}:score
 
 \code+{end}
+
+\fig{begin}
+    \img{pages/graph/erd/postcounters.png}
+\fig{end}
 
 \list*{
 	\* \@id\@，该计数器对应的回复id
     \* \@parent\@，指向上级（讨论）
 	\* \@up_number\@，点赞同的人数
 	\* \@down_number\@，点反对的人数
-	\* \@up_number\@，计算时赞同的权重
-	\* \@down_number\@，计算时反对的权重
-	\* \@score\@，PostStat里计算出的分数，用于排序。
+	\* \@up_weight\@，计算时赞同的权重
+	\* \@down_weight\@，计算时反对的权重
+	\* \@score\@，i.e. \@/resources/stats/post/{id}:score\@，用于排序。
 }
+
+\h5{数据库Schema}
+\code+[sql]{begin}
+
+CREATE TABLE PostCounters(
+    PostId     int NOT NULL UNIQUE,
+    Parent     int NOT NULL,
+    UpNumber   int NOT NULL,
+    DownNumber int NOT NULL,
+    UpWeight   int NOT NULL,
+    DownWeight int NOT NULL,
+
+    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC),
+    -- PostCounters and Posts are in a one-to-one relationship.
+    CONSTRAINT FK_PostId FOREIGN KEY (PostId)
+        REFERENCES Posts (PostId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT FK_Parent FOREIGN KEY (Parent)
+        REFERENCES Threads (ThreadId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+);
+
+\code+{end}
 
 \h4{入口和过滤器}
 特定回复计数器资源的固定入口为\@/resources/counters/posts/{$id}\@，回复计数器列表资源的固定入口为\@/resources/counters/posts/\@。

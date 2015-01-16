@@ -8,6 +8,41 @@
 
 \h4{数据结构}
 
+\h5{JSON API}
+
+\code+[coffee]{begin}
+class Post
+    String id
+    String parent
+    String reply_to
+    String oplist
+    String author
+    String author_name          # computed, i.e. /resources/users/{author}:name
+    String default_post_oplist  # computed, i.e. /resources/threads/{parent}:default_post_oplist
+    Boolean enabled   
+    Boolean hidden    
+    Boolean anonymous           # computed, i.e. /resources/threads/{parent}:anonymous
+    String content
+    String time                 # ISO 8601 format
+
+\code+{end}
+
+\fig{begin}
+
+    \img{pages/graph/erd/posts.png}
+
+\fig{end}
+
+\list*{
+    \* \@parent\@，指向上级（讨论）
+    \* \@reply_to\@，回复对象（回复），默认为\@/resources/threads/{parent}:first_post\@
+    \* \@default_post_oplist\@，讨论默认的回复权限列表，储存于\@/resources/threads/{parent}:default_post_oplist\@
+    \* \@enabled\@通常为true，当为false时表示这个回复被关闭，用于占楼但不显示
+    \* \@hidden\@通常为false，当为true时表示这个回复可以被隐藏
+    \* \@anonymous\@，是否匿名，由上级资源（讨论）指定，默认为false，为true时，author为空，author_name为hashed
+    \* \@author_name\@，储存于\@/resources/users/{author}:name\@
+}
+
 \h5{数据库Schema}
 
 \code+[sql]{begin}
@@ -50,41 +85,6 @@ CREATE TABLE Posts(
 );
 
 \code+{end}
-
-\h5{JSON API}
-
-\code+[coffee]{begin}
-class Post
-    String id
-    String parent
-    String reply_to
-    String oplist
-    String author
-    String author_name          # computed, i.e. /resources/users/{author}:name
-    String default_post_oplist  # computed, i.e. /resources/threads/{parent}:default_post_oplist
-    Boolean enabled   
-    Boolean hidden    
-    Boolean anonymous           # computed, i.e. /resources/threads/{parent}:anonymous
-    String content
-    String time                 # ISO 8601 format
-
-\code+{end}
-
-\fig{begin}
-
-    \img{pages/graph/erd/posts.png}
-
-\fig{end}
-
-\list*{
-    \* \@parent\@，指向上级（讨论）
-    \* \@reply_to\@，回复对象（回复），默认为\@/resources/threads/{parent}:first_post\@
-    \* \@default_post_oplist\@，讨论默认的回复权限列表，储存于\@/resources/threads/{parent}:default_post_oplist\@
-    \* \@enabled\@通常为true，当为false时表示这个回复被关闭，用于占楼但不显示
-    \* \@hidden\@通常为false，当为true时表示这个回复可以被隐藏
-    \* \@anonymous\@，是否匿名，由上级资源（讨论）指定，默认为false，为true时，author为空，author_name为hashed
-    \* \@author_name\@，储存于\@/resources/users/{author}:name\@
-}
 
 \h4{入口和过滤器}
 
