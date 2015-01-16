@@ -13,98 +13,6 @@
 
 \h4{数据结构}
 
-\h5{建议数据库Schema}
-
-SQL Server:
-\code+[sql]{begin}
-
-CREATE TABLE ThreadsTypeAttributes(
-    Type nvarchar(16) NOT NULL DEFAULT 'topic' PRIMARY KEY,
-);
-INSERT INTO ThreadsTypeAttributes (Type) VALUES ('topic');
-INSERT INTO ThreadsTypeAttributes (Type) VALUES ('qa');
-INSERT INTO ThreadsTypeAttributes (Type) VALUES ('poll');
-
-CREATE TABLE ThreadsTopTypeAttributes(
-    Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY,
-);
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('off');
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('temp');
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('board');
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('parent');
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('top');
-
-CREATE TABLE ThreadsGoodTypeAttributes(
-    Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY,
-);
-INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('off');
-INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('reserved');
-INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('elite');
-
-CREATE TABLE Threads(
-    ThreadId int NOT NULL IDENTITY,
-    Parent int NOT NULL,
-    Oplist int NOT NULL,
-    DefaultPostOplist int NOT NULL,
-    FirstPost int NOT NULL,
-    Title nvarchar(256) NOT NULL,
-    Author int NOT NULL,
-    Type nvarchar(16) NOT NULL,
-    TopType nvarchar(16) NOT NULL,
-    GoodType nvarchar(16) NOT NULL,
-    Anonymous bit NOT NULL,
-    NoPost bit NOT NULL,
-    Time datetime NOT NULL,
-    Highlight nvarchar(64) NULL DEFAULT NULL,
-    -- e.g. A JSON expression of '{"color": "0x222222", "italic": false, "bold": false}'.
-
-    INDEX IDX_Parent (Parent),
-    INDEX IDX_Author (Author),
-    INDEX IDX_Type (Type),
-    INDEX IDX_TopType (TopType),
-    INDEX IDX_GoodType (GoodType),
-    INDEX IDX_Time (Time DESC),
-
-    CONSTRAINT PK_ThreadId PRIMARY KEY CLUSTERED (ThreadId DESC),
-    CONSTRAINT FK_Parent FOREIGN KEY (Parent)
-        REFERENCES Boards (BoardId)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT FK_Oplist FOREIGN KEY (Oplist)
-        REFERENCES Oplists (OplistId)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT FK_DefaultPostOplist FOREIGN KEY (DefaultPostOplist)
-        REFERENCES Oplists (OplistId)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT FK_FirstPost FOREIGN KEY (FirstPost)
-        REFERENCES Posts (PostId)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT FK_Author FOREIGN KEY (Author)
-        REFERENCES Users (UserId)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT FK_Type FOREIGN KEY (Type)
-    -- Use foreign key constraint to limit the values.
-        REFERENCES ThreadsTypeAttributes (Type)
-        ON UPDATE CASCADE
-        ON DELETE SET DEFAULT,
-    CONSTRAINT FK_TopType FOREIGN KEY (TopType)
-    -- Use foreign key constraint to limit the values.
-        REFERENCES ThreadsTopTypeAttributes (Type)
-        ON UPDATE CASCADE
-        ON DELETE SET DEFAULT,
-    CONSTRAINT FK_GoodType FOREIGN KEY (GoodType)
-    -- Use foreign key constraint to limit the values.
-        REFERENCES ThreadsGoodTypeAttributes (Type)
-        ON UPDATE CASCADE
-        ON DELETE SET DEFAULT
-);
-
-\code+{end}
-
 \h5{JSON API}
 \@computed\@表示后端在读时计算出，在API层面只读。
 
@@ -158,7 +66,102 @@ class Highlight
     }
 }
 
-返回数据的SQL例：
+\h5{建议数据库Schema}
+
+SQL Server:
+\code+[sql]{begin}
+
+CREATE TABLE ThreadsTypeAttributes(
+    Type nvarchar(16) NOT NULL DEFAULT 'topic' PRIMARY KEY
+);
+INSERT INTO ThreadsTypeAttributes (Type) VALUES ('topic');
+INSERT INTO ThreadsTypeAttributes (Type) VALUES ('qa');
+INSERT INTO ThreadsTypeAttributes (Type) VALUES ('poll');
+
+CREATE TABLE ThreadsTopTypeAttributes(
+    Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY
+);
+INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('off');
+INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('temp');
+INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('board');
+INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('parent');
+INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('top');
+
+CREATE TABLE ThreadsGoodTypeAttributes(
+    Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY
+);
+INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('off');
+INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('reserved');
+INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('elite');
+
+CREATE TABLE Threads(
+    ThreadId          int NOT NULL IDENTITY,
+    Parent            int NOT NULL,
+    Oplist            int NOT NULL,
+    DefaultPostOplist int NOT NULL,
+    FirstPost         int NULL,
+    -- for insert the thread record before the first post record without triggering the constraint.
+    Title             nvarchar(256) NOT NULL,
+    Author            int NOT NULL,
+    Type              nvarchar(16) NOT NULL,
+    TopType           nvarchar(16) NOT NULL,
+    GoodType          nvarchar(16) NOT NULL,
+    Anonymous         bit NOT NULL,
+    NoPost            bit NOT NULL,
+    Time              datetime NOT NULL,
+    Highlight         nvarchar(64) NULL DEFAULT NULL,
+    -- e.g. A JSON expression of '{"color": "0x222222", "italic": false, "bold": false}'.
+
+    INDEX IDX_Parent (Parent),
+    INDEX IDX_Author (Author),
+    INDEX IDX_Type (Type),
+    INDEX IDX_TopType (TopType),
+    INDEX IDX_GoodType (GoodType),
+    INDEX IDX_Time (Time DESC),
+
+    CONSTRAINT PK_ThreadId PRIMARY KEY CLUSTERED (ThreadId DESC),
+    CONSTRAINT FK_Parent FOREIGN KEY (Parent)
+        REFERENCES Boards (BoardId)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION, -- Can not delete a board without deleting all its threads.
+    CONSTRAINT FK_Oplist FOREIGN KEY (Oplist)
+        REFERENCES Oplists (OplistId)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION, -- Can not delete an oplist in use.
+    CONSTRAINT FK_DefaultPostOplist FOREIGN KEY (DefaultPostOplist)
+        REFERENCES Oplists (OplistId)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION, -- Can not delete an oplist in use.
+    CONSTRAINT FK_FirstPost FOREIGN KEY (FirstPost)
+        REFERENCES Posts (PostId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+        -- when there's no other posts besides the FirstPost in this thread,
+        -- deleting the first post would delete the thread.
+    CONSTRAINT FK_Author FOREIGN KEY (Author)
+        REFERENCES Users (UserId)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION, -- Can not delete a user.
+    CONSTRAINT FK_Type FOREIGN KEY (Type)
+        -- Use foreign key constraint to limit the values.
+        REFERENCES ThreadsTypeAttributes (Type)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION,
+    CONSTRAINT FK_TopType FOREIGN KEY (TopType)
+        -- Use foreign key constraint to limit the values.
+        REFERENCES ThreadsTopTypeAttributes (Type)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION,
+    CONSTRAINT FK_GoodType FOREIGN KEY (GoodType)
+        -- Use foreign key constraint to limit the values.
+        REFERENCES ThreadsGoodTypeAttributes (Type)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION
+);
+
+\code+{end}
+
+\h5{数据库View}
 \code+[sql]{begin}
 
 CREATE VIEW ThreadsView AS
@@ -182,8 +185,10 @@ SELECT
 FROM Posts AS p
     INNER JOIN Boards AS b on b.BoardId = t.Parent
     INNER JOIN Posts AS p ON p.Parent = t.ThreadId
-    INNER JOIN Users AS u ON u.UserId = p.Author
+    INNER JOIN Users AS u ON u.UserId = p.Author;
 \code+{end}
+
+
 \h4{入口和过滤器}
 
 特定讨论资源的固定入口为\@/resources/threads/{$id}\@，讨论列表资源入口为\@/resources/threads\@，配合过滤器可以筛选出需要的讨论列表。
@@ -195,8 +200,8 @@ FROM Posts AS p
     \* \@?top_type={$top_type}\@，某一置顶的讨论列表；
     \* \@?good_type={$good_type}\@，某一精华类型的讨论列表；
     \* \@?author={$user_id}\@，某一作者发布的讨论列表；
-    \* \@?sort_by={$sort_method}\@，排序方式，默认为\@'invtime'\@（按时间倒序），可选的其他值为\@'mru'\@（最近回复优先顺序）
-    \* \@?count={$count}&offset={$offset}\@，讨论列表的第\@$count*$offset+1\@到\@$count*$offset+$count\@项，共计\@$count\@项。默认\@$count=20, offset=0\@。\@$count\@上限为100，即一个请求最多返回100条post的集合。
+    \* \@?sort_by={$method}\@，排序方式，默认为\@'invtime'\@（时间逆序），可选\@'mru'\@（最新回复）。
+    \* \@?count={$count}&offset={$offset}\@，讨论列表的第\@$count*$offset+1\@到\@$count*$offset+$count\@项，共计\@$count\@项。默认\@$count=20, $offset=0\@。\@$count\@上限为100，即一个请求最多返回100条post的集合。
 }
 过滤器可以组合应用，解析顺序如上述。
 
@@ -341,8 +346,6 @@ GET方法用于获取资源。
 
 获取资源列表时使用\@/resources/threads/\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=invtime&count=20&offset=0\@。
 
-返回的JSON格式为：
-
 \code+[json]{begin}
 
 {
@@ -379,7 +382,7 @@ GET方法用于获取资源。
             "description": "最后页"
         }
     },
-    "item": "threads/{threads.id}",
+    "item": "threads/{id}",
     "self": "threads/?parent=14&sort_by=invtime&count=20&offset=0",
     "source": "threads/",
     "base": "/resources/"

@@ -8,7 +8,6 @@
 
 
 \h4{数据结构}
-\@computed\@表示后端不储存该字段，仅仅在读时计算出，在API层面只读。
 
 \code+[coffee]{begin}
     class PostStat

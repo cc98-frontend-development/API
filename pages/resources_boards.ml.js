@@ -10,9 +10,34 @@
 
 \h4{数据结构}
 
-\h5{建议数据库Schema}
+\h5{JSON API}
+\@computed\@表示后端在读时计算出，在API层面只读。
 
-SQL Server:
+\code+[coffee]{begin}
+class Boards
+    String boards_id                # /resources/boards/{board_id}
+    String parent                   # /resources/boards/{parent}, 0 or NULL
+    String title
+    String description
+    String oplist                   # /resources/oplists/{oplist}
+    String default_board_oplist     # computed, i.e. /resources/boards/{parent}:default_board_oplist, /resources/oplists/{default_board_oplist}
+    String default_thread_oplist    # /resources/oplists/{default_thread_oplist}
+    String default_post_oplist      # /resources/oplists/{default_post_oplist}
+    String icon_url
+\code+{end}
+
+\list*{
+    \* \@parent\@，指向上级（板块）,\@parent == 0\@表示为总版，\@parent == NULL\@表示全站根板块，其余为各个子板块。
+    \* \@title\@，板块名，纯文本
+    \* \@description\@，板块简介，纯文本
+    \* \@default_board_oplist\@，板块的默认oplist，储存于\@/resources/boards/{parent}:default_board_oplist\@
+    \* \@default_thread_oplist\@，讨论的默认oplist
+    \* \@default_post_oplist\@，讨论中回复的默认oplist
+    \* \@icon_url\@，图标的访问地址
+}
+
+\h5{数据库Schema}
+
 \code+[sql]{begin}
 
 CREATE TABLE Icons(
@@ -55,32 +80,6 @@ CREATE TABLE Boards(
 );
 
 \code+{end}
-
-\h5{JSON API}
-\@computed\@表示后端在读时计算出，在API层面只读。
-
-\code+[coffee]{begin}
-class Boards
-    String boards_id                # /resources/boards/{board_id}
-    String parent                   # /resources/boards/{parent}, 0 or NULL
-    String title
-    String description
-    String oplist                   # /resources/oplists/{oplist}
-    String default_board_oplist     # computed, i.e. /resources/boards/{parent}:default_board_oplist, /resources/oplists/{default_board_oplist}
-    String default_thread_oplist    # /resources/oplists/{default_thread_oplist}
-    String default_post_oplist      # /resources/oplists/{default_post_oplist}
-    String icon_url
-\code+{end}
-
-\list*{
-    \* \@parent\@，指向上级（板块）,\@parent == 0\@表示为总版，\@parent == NULL\@表示全站根板块，其余为各个子板块。
-    \* \@title\@，板块名，纯文本
-    \* \@description\@，板块简介，纯文本
-    \* \@default_board_oplist\@，板块的默认oplist，储存于\@/resources/boards/{parent}:default_board_oplist\@
-    \* \@default_thread_oplist\@，讨论的默认oplist
-    \* \@default_post_oplist\@，讨论中回复的默认oplist
-    \* \@icon_url\@，图标的访问地址
-}
 
 \h4{入口和过滤器}
 
