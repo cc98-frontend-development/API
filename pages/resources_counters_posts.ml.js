@@ -2,6 +2,30 @@
 
 \h4{数据结构}
 
+\h5{JSON API}
+\code+[coffee]{begin}
+
+class PostCounter
+    String id
+    String parent
+    Number up_number
+    Number down_number
+    Number up_weight
+    Number down_weight
+    Number score
+
+\code+{end}
+
+\list*{
+	\* \@id\@，该计数器对应的回复id
+    \* \@parent\@，指向上级（讨论）
+	\* \@up_number\@，点赞同的人数
+	\* \@down_number\@，点反对的人数
+	\* \@up_number\@，计算时赞同的权重
+	\* \@down_number\@，计算时反对的权重
+	\* \@score\@，PostStat里计算出的分数，用于排序。
+}
+
 \h5{数据库Schema}
 \code+[sql]{begin}
 
@@ -34,30 +58,6 @@ CREATE TABLE PostCounters(
 );
 
 \code+{end}
-
-\h5{JSON API}
-\code+[coffee]{begin}
-
-class PostCounter
-    String id
-    String parent
-    Number up_number
-    Number down_number
-    Number up_weight
-    Number down_weight
-    Number score
-
-\code+{end}
-
-\list*{
-	\* \@id\@，该计数器对应的回复id
-    \* \@parent\@，指向上级（讨论）
-	\* \@up_number\@，点赞同的人数
-	\* \@down_number\@，点反对的人数
-	\* \@up_number\@，计算时赞同的权重
-	\* \@down_number\@，计算时反对的权重
-	\* \@score\@，PostStat里计算出的分数，用于排序。
-}
 
 \h4{入口和过滤器}
 特定回复计数器资源的固定入口为\@/resources/counters/posts/{$id}\@，回复计数器列表资源的固定入口为\@/resources/counters/posts/\@。
