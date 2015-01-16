@@ -64,6 +64,6 @@ strict digraph g {
 
 	node_a_thread_default_post_oplist -> node_a_oplist_id;
 
-	node_a_post_stat_id -> node_a_post_id;
+	node_a_post_stat_id -> node_a_post_counter_id;
 	node_a_post_counter_id -> node_a_post_id;
 }

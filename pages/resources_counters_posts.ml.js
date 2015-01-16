@@ -16,13 +16,17 @@ class PostCounter
 
 \code+{end}
 
+\fig{begin}
+    \img{pages/graph/erd/postcounters.png}
+\fig{end}
+
 \list*{
 	\* \@id\@，该计数器对应的回复id
     \* \@parent\@，指向上级（讨论）
 	\* \@up_number\@，点赞同的人数
 	\* \@down_number\@，点反对的人数
-	\* \@up_number\@，计算时赞同的权重
-	\* \@down_number\@，计算时反对的权重
+	\* \@up_weight\@，计算时赞同的权重
+	\* \@down_weight\@，计算时反对的权重
 	\* \@score\@，PostStat里计算出的分数，用于排序。
 }
 
@@ -40,7 +44,7 @@ CREATE TABLE PostCounters(
 
     INDEX IDX_Rank (Score DESC),
 
-    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC)
+    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC),
     -- PostCounters and Posts are in a one-to-one relationship.
     CONSTRAINT FK_PostId FOREIGN KEY (PostId)
         REFERENCES Posts (PostId)

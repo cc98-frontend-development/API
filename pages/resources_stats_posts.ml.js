@@ -26,8 +26,9 @@ CREATE TABLE PostStats(
     PostId  int NOT NULL UNIQUE,
     Score   float NOT NULL,
 
-    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC)
-    -- PostStats and Posts are in a one-to-one relationship.
+    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC),
+    -- PostStats and PostCounters are in a one-to-one relationship.
+    -- PostCounters and Posts are in a one-to-one relationship.
     CONSTRAINT FK_PostId FOREIGN KEY (PostId)
         REFERENCES PostCounters (PostId)
         ON UPDATE CASCADE
@@ -64,7 +65,7 @@ GET方法用于获取资源。
     },
     "self": "posts/{id}",
     "source": "posts/{id}",
-	"base": "/resources/stats/"
+    "base": "/resources/stats/"
 }
 
 \code+{end}
