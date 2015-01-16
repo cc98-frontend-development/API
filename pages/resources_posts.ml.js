@@ -8,24 +8,25 @@
 
 \h4{数据结构}
 
-\h5{建议数据库Schema}
+\h5{数据库Schema}
 
-SQL Server:
 \code+[sql]{begin}
 
 CREATE TABLE Posts(
-    PostId int NOT NULL IDENTITY,
-    Parent int NOT NULL,
+    PostId  int NOT NULL IDENTITY,
+    Parent  int NOT NULL,
     ReplyTo int NULL,
-    Oplist int NOT NULL,
-    Author int NOT NULL,
+    Oplist  int NOT NULL,
+    Author  int NOT NULL,
     Enabled bit NOT NULL,
-    Hidden bit NOT NULL,
+    Hidden  bit NOT NULL,
     Content nvarchar(max) NOT NULL,
-    Time datetime NOT NULL,
+    Time    datetime NOT NULL,
 
     INDEX IDX_Parent (Parent),
     INDEX IDX_Author (Author),
+    INDEX IDX_Time (Time DESC),
+    -- for default order: ORDEY BY (Time DESC)
 
     CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC),
     CONSTRAINT FK_Parent FOREIGN KEY (Parent)
@@ -33,14 +34,15 @@ CREATE TABLE Posts(
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT FK_ReplyTo FOREIGN KEY (ReplyTo)
-    -- NULL means target deleted
         REFERENCES Posts (PostId)
         ON UPDATE CASCADE
         ON DELETE SET NULL,
+        -- NULL means target deleted
     CONSTRAINT FK_Oplist FOREIGN KEY (Oplist)
         REFERENCES Oplists (OplistId)
         ON UPDATE CASCADE
-        ON DELETE CASCADE,
+        ON DELETE NO ACTION,
+        -- Oplist in use can not be deleted
     CONSTRAINT FK_Author FOREIGN KEY (Author)
         REFERENCES Users (UserId)
         ON UPDATE CASCADE
@@ -50,7 +52,6 @@ CREATE TABLE Posts(
 \code+{end}
 
 \h5{JSON API}
-\@computed\@表示后端在读时计算出，在API层面只读。
 
 \code+[coffee]{begin}
 class Post
@@ -61,7 +62,6 @@ class Post
     String author
     String author_name          # computed, i.e. /resources/users/{author}:name
     String default_post_oplist  # computed, i.e. /resources/threads/{parent}:default_post_oplist
-    Number rank_score           # computed, i.e. /resources/stats/posts/{id}:rank_score
     Boolean enabled   
     Boolean hidden    
     Boolean anonymous           # computed, i.e. /resources/threads/{parent}:anonymous
@@ -73,44 +73,18 @@ class Post
 \fig{begin}
 
     \img{pages/graph/erd/posts.png}
-    \alert[info]{\@*key*\@表示该键为主键；\@-key-\@表示该键储存于其他结构中，在此资源内只读；\@<key>\@表示该键为一结构，实线表示外键约束，虚线表示计算}
 
 \fig{end}
 
 \list*{
     \* \@parent\@，指向上级（讨论）
     \* \@reply_to\@，回复对象（回复），默认为\@/resources/threads/{parent}:first_post\@
-    \* \@default_post_oplist\@，储存于\@/resources/threads/{parent}:default_post_oplist\@
-    \* \@rank_score\@，用于排序的评分，储存于\@/resources/stats/posts/{id}:rank_score\@
+    \* \@default_post_oplist\@，讨论默认的回复权限列表，储存于\@/resources/threads/{parent}:default_post_oplist\@
     \* \@enabled\@通常为true，当为false时表示这个回复被关闭，用于占楼但不显示
     \* \@hidden\@通常为false，当为true时表示这个回复可以被隐藏
     \* \@anonymous\@，是否匿名，由上级资源（讨论）指定，默认为false，为true时，author为空，author_name为hashed
     \* \@author_name\@，储存于\@/resources/users/{author}:name\@
 }
-
-返回数据的SQL例：
-\code+[sql]{begin}
-
-CREATE VIEW PostsView AS
-SELECT
-    p.PostId AS Id,
-    p.Parent,
-    p.ReplyTo,
-    p.Oplist,
-    p.Enabled,
-    p.Hidden,
-    p.Content,
-    p.Author,
-    p.Time,
-    u.Name AS AuthorName,
-    t.DefaultPostOplist,
-    t.Anonymous,
-    s.RankScore
-FROM Posts AS p
-    INNER JOIN Users AS u ON u.UserId = p.Author
-    INNER JOIN Threads AS t ON t.ThreadId = p.Parent
-    INNER JOIN PostStats AS s on s.PostId = p.PostId,
-\code+{end}
 
 \h4{入口和过滤器}
 
@@ -121,7 +95,6 @@ FROM Posts AS p
     \* \@?parent={$parent}\@，某一讨论下的回复列表；
     \* \@?reply_to={$reply_to}\@，回复某一回复的回复列表；
     \* \@?author={$author}\@，某一用户发表的回复列表；
-    \* \@?sort_by={$sort_method}\@，回复列表排序，可取的值为\@'time'\@（时间顺序），\@'rank_score'\@（评分顺序），默认为\@'time'\@；
     \* \@?count={$count}&offset={$offset}\@，回复列表的第\@$count*$offset+1\@到\@$count*$offset+$count\@项，共计\@$count\@项。默认\@$count=20, $offset=0\@。\@$count\@上限为100，即一个请求最多返回100条post的集合。
 }
 
@@ -147,7 +120,6 @@ Last-Modified: Mon, 06 May 2013 06:12:57 GMT
 Allow: OPTIONS, GET
 \code+{end}
 \code+[json]{begin}
-HTTP/1.1 200 OK
 {
     "self": "posts/",
     "source": "posts/",
@@ -238,11 +210,11 @@ HTTP/1.1 200 OK
 \code+{end}
 
 \h4{获取资源：GET}
-\alert[info]{max-age:days, must-revalidate}
 
 GET方法用于获取资源。
 
 获取特定回复时使用\@/resources/posts/{$id}\@。
+\alert[info]{max-age:days, must-revalidate}
 
 返回的JSON格式为：
 
@@ -265,26 +237,25 @@ GET方法用于获取资源。
 默认max-age:minutes，无需验证，可以获得全局的回复列表\newline
 有parent过滤器时，max-age:days, must-revalidate，获得某一讨论的回复列表}
 
-获取资源列表时使用\@/resources/posts/\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=time&count=20&offset=0\@。
+获取资源列表时使用\@/resources/posts/\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?count=20&offset=0\@。
 
-返回的JSON格式为：
 \code+[json]{begin}
 
 {
     "posts": [
         {
-            "post": "1361"
+            "id": "1361"
             ...
         },
         {
-            "post": "1363"
+            "id": "1363"
             ...
         },
         ...
     ],
     "links": {
         "first_page": {
-            "href": "posts/?parent=161&sort_by=time&count=20&offset=0",
+            "href": "posts/?parent=161&count=20&offset=0",
             "method": "GET",
             "description": "第一页"
         },
@@ -294,18 +265,18 @@ GET方法用于获取资源。
             "description": "前一页"
         },
         "next_page": {
-            "href": "posts/?parent=161&sort_by=time&count=20&offset=2",
+            "href": "posts/?parent=161&count=20&offset=2",
             "method": "GET",
             "description": "后一页"
         },
         "last_page": {
-            "href": "posts/?parent=161&sort_by=time&count=20&offset=23",
+            "href": "posts/?parent=161&count=20&offset=23",
             "method": "GET",
             "description": "最后页"
         }
     },
     "item": "posts/{id}",
-    "self": "posts/?parent=161&sort_by=time&count=20&offset=0",
+    "self": "posts/?parent=161&count=20&offset=0",
     "source": "posts/",
     "base": "/resources/"
 }

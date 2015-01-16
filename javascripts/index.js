@@ -5,6 +5,7 @@ require('Sammy');
 
 var nav = [
     { link_text: "简介", link_file:"intro.ml.js", child:false},
+    { link_text: "文档约定", link_file:"convention.ml.js", child:false},
     { link_text: "基本协议", link_file:"protocol.ml.js", 
         child:[
         { link_text: "HTTP缓存", link_file:"basic_cache.ml.js"},
@@ -13,16 +14,23 @@ var nav = [
     },
     { link_text: "资源", link_file:"resources.ml.js",
         child:[
-        {link_text: "resources/posts", link_file:"resources_posts.ml.js"},
-        {link_text: "resources/threads", link_file:"resources_threads.ml.js"},
-        {link_text: "resources/boards", link_file:"resources_boards.ml.js"}
+        {link_text: "/resources/posts", link_file:"resources_posts.ml.js"},
+        {link_text: "/resources/threads", link_file:"resources_threads.ml.js"},
+        {link_text: "/resources/boards", link_file:"resources_boards.ml.js"}
         ]
     },
-    { link_text: "统计", link_file:"resources_stat.ml.js",
+    { link_text: "计数器", link_file:"resources_counters.ml.js",
         child:[
-        {link_text: "resources/stats/posts", link_file:"resources_stats_posts.ml.js"},
-        {link_text: "resources/stats/threads", link_file:"resources_stats_threads.ml.js"},
-        {link_text: "resources/stats/boards", link_file:"resources_stats_boards.ml.js"}
+        {link_text: "counters/posts", link_file:"resources_counters_posts.ml.js"}
+        //{link_text: "stats/threads", link_file:"resources_stats_threads.ml.js"},
+        //{link_text: "stats/boards", link_file:"resources_stats_boards.ml.js"}
+        ]
+    },
+    { link_text: "统计", link_file:"resources_stats.ml.js",
+        child:[
+        {link_text: "stats/posts", link_file:"resources_stats_posts.ml.js"},
+        {link_text: "stats/threads", link_file:"resources_stats_threads.ml.js"},
+        {link_text: "stats/boards", link_file:"resources_stats_boards.ml.js"}
         ]
     },
     { link_text: "授权", link_file:"auth.ml.js",

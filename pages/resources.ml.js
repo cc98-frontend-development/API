@@ -38,6 +38,7 @@ URL: \@https://api.cc98.org/resources\@
         { "id": "oplists",     "title": "操作权限列表" },
         { "id": "users",       "title": "用户" },
         { "id": "files",       "title": "文件" },
+        { "id": "counters",    "title": "计数器" },
         { "id": "stats",       "title": "统计" }
     ],
     "links": {
