@@ -7,7 +7,6 @@ strict digraph g {
 	subgraph cluster_post_counter {
 		label = "PostCounter";
 		node_a_post_counter_id             [ label = "*id*" ];
-		node_a_post_counter_parent         [ label = "parent" ];
 		node_a_post_counter_up_number      [ label = "up_number"];
 		node_a_post_counter_down_number    [ label = "down_number"];
 		node_a_post_counter_up_weight      [ label = "up_weight"];
@@ -34,7 +33,6 @@ strict digraph g {
 
 	node_a_post_stat_id -> node_a_post_counter_id;
 	node_a_post_counter_id -> node_a_post_id;
-	node_a_post_counter_parent -> node_a_thread_id;
 	node_a_post_parent -> node_a_thread_id;
 
 	node_a_post_stat_score -> node_a_post_counter_up_number [ style = dashed ];

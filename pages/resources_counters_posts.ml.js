@@ -7,7 +7,6 @@
 
 class PostCounter
     String id
-    String parent
     Number up_number
     Number down_number
     Number up_weight
@@ -22,7 +21,6 @@ class PostCounter
 
 \list*{
 	\* \@id\@，该计数器对应的回复id
-    \* \@parent\@，指向上级（讨论）
 	\* \@up_number\@，点赞同的人数
 	\* \@down_number\@，点反对的人数
 	\* \@up_weight\@，计算时赞同的权重
@@ -42,7 +40,7 @@ CREATE TABLE PostCounters(
     DownWeight int NOT NULL,
 
     CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC),
-    -- PostCounters and Posts are in a one-to-one relationship.
+    -- PostCounters and Posts are in an one-to-one relationship.
     CONSTRAINT FK_PostId FOREIGN KEY (PostId)
         REFERENCES Posts (PostId)
         ON UPDATE CASCADE
@@ -63,6 +61,7 @@ CREATE TABLE PostCounters(
     \* \@?parent={$parent}\@，某一讨论下的回复计数器列表；
     \* \@?reply_to={$reply_to}\@，回复某一回复的回复计数器列表；
     \* \@?author={$author}\@，某一用户发表的回复的回复计数器列表；
+    \* \@?sort_by={$method}\@，排序方式，默认为时间顺序\@'time'\@，可选为好评率\@'score'\@；
     \* \@?count={$count}&offset={$offset}\@，回复计数器列表的第\@$count*$offset+1\@到\@$count*$offset+$count\@项，共计\@$count\@项。默认\@$count=20, $offset=0\@。\@$count\@上限为100，即一个请求最多返回100条post的集合。
 }
 
@@ -96,7 +95,7 @@ GET方法用于获取资源。
 }
 \code+{end}
 
-获取资源列表时使用\@/resources/counters/posts/\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?count=20&offset=0\@。
+获取资源列表时使用\@/resources/counters/posts/\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=time&count=20&offset=0\@。
 \alert[info]{
 默认max-age:minutes，无需验证，可以获得全局的回复列表\newline
 有parent过滤器时，max-age:days, must-revalidate，获得某一讨论的回复列表}
@@ -114,7 +113,7 @@ GET方法用于获取资源。
         ...
     ],
     "item": "posts/{id}",
-    "self": "posts/?parent=161&count=20&offset=0",
+    "self": "posts/?parent=161&sort_by=time&count=20&offset=0",
     "source": "posts/",
     "base": "/resources/counters/"
 }

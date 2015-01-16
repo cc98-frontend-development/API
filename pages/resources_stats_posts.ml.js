@@ -29,9 +29,9 @@ CREATE TABLE PostStats(
     INDEX IDX_Score (Score DESC),
 
     CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC),
-    -- PostStats and PostCounters are in a one-to-one relationship.
-    -- PostCounters and Posts are in a one-to-one relationship.
     CONSTRAINT FK_PostId FOREIGN KEY (PostId)
+        -- PostStats and PostCounters are in an one-to-one relationship.
+        -- PostCounters and Posts are in an one-to-one relationship.
         REFERENCES PostCounters (PostId)
         ON UPDATE CASCADE
         ON DELETE CASCADE
@@ -56,8 +56,6 @@ OPTIONS用于获得用户对当前资源的访问方法，通过报头Allow字�
 GET方法用于获取资源。
 
 获取特定回复统计使用\@/resources/stats/posts/{$id}\@。
-
-返回的JSON格式为：
 
 \code+[json]{begin}
 {
