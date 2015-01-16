@@ -12,15 +12,9 @@ URL: \@https://api.cc98.org/resources\@
 
 \h5{回复}
 
-缓存策略：长过期，需验证。
+\alert[info]{max-age:months, must-revalidate}
 
 \@Allow\@：当前允许的方法，包括\@OPTIONS\@和\@GET\@。
-
-\code+[json]{begin}
-{ "links": {
-    }
-}
-\code+{end}
 
 \h4{读取资源列表：GET} 
 
@@ -32,24 +26,29 @@ URL: \@https://api.cc98.org/resources\@
 
 \h5{回复}
 
-缓存策略：长过期，需验证。
-
-\@Link: </resources>; rel="self"; method="GET"\@
+\alert[info]{max-age:months, must-revalidate}
 
 报文：
 \code+[json]{begin}
 { 
     "resources": [
-        { "id": "boards",      "href": "/resources/boards", "title": "板块" },
-        { "id": "threads",     "href": "/resources/threads", "title": "讨论" },
-        { "id": "posts",       "href": "/resources/posts", "title": "回复" },
-        { "id": "oplists",     "href": "/resources/oplists", "title": "操作权限列表" },
-        { "id": "users",       "href": "/resources/users", "title": "用户" },
-        { "id": "files",       "href": "/resources/files", "title": "文件" },
-        { "id": "stats",       "href": "/resources/stats", "title": "统计" }
+        { "id": "boards",      "title": "板块" },
+        { "id": "threads",     "title": "讨论" },
+        { "id": "posts",       "title": "回复" },
+        { "id": "oplists",     "title": "操作权限列表" },
+        { "id": "users",       "title": "用户" },
+        { "id": "files",       "title": "文件" },
+        { "id": "stats",       "title": "统计" }
     ],
-    "self": "/resources/",
-    "source": "/resources/",
+    "links": {
+        "options": {
+            "href" : "resources/{id}",
+            "method": "OPTIONS",
+            "description": "获取各个资源的访问方法"
+        },
+    },
+    "self": "resources/",
+    "source": "resources/",
     "base": "/"
 }
 
