@@ -2,68 +2,74 @@
 strict digraph g {
 	node [ shape = box ];
 	nodesep = 0.1;
-	ranksep = 1;
+	ranksep = 1.5;
 
 	subgraph cluster_post_1 {
-		label = "Post";
-		node_a_post_id                  [ label = "*id*" ];
-		node_a_post_parent              [ label = "parent" ];
-		node_a_post_reply_to            [ label = "reply_to" ];
-		node_a_post_oplist              [ label = "oplist" ];
-		node_a_post_default_post_oplist [ label = "-default_post_oplist-" ];
-		node_a_post_enable              [ label = "enable" ];
-		node_a_post_hidden              [ label = "hidden" ];
-		node_a_post_anonymous           [ label = "-anonymous-" ];
-		node_a_post_content             [ label = "content" ];
-		node_a_post_time                [ label = "time" ];
-		node_a_post_author              [ label = "author" ];
-		node_a_post_author_name         [ label = "-author_name-" ];
+		label = "Posts";
+		node_a_post_post_id             [ label = "*PostId*" ];
+		node_a_post_parent              [ label = "Parent" ];
+		node_a_post_reply_to            [ label = "ReplyTo" ];
+		node_a_post_oplist              [ label = "Oplist" ];
+		node_a_post_enable              [ label = "Enable" ];
+		node_a_post_hidden              [ label = "Hidden" ];
+		node_a_post_content             [ label = "Content" ];
+		node_a_post_time                [ label = "Time" ];
+		node_a_post_author              [ label = "Author" ];
 	}
+
+	node_a_post_parent -> node_a_thread_thread_id;
+	node_a_post_reply_to -> node_a_post_post_id_2 [ constraint = false ];
+	node_a_post_oplist -> node_a_oplist_oplist_id;
+	node_a_post_stat_post_id -> node_a_post_post_id;
+	node_a_post_counter_post_id -> node_a_post_post_id;
+	node_a_post_author -> node_a_user_user_id;
 
 	subgraph cluster_post_stat {
-		label = "PostStat";
-		node_a_post_stat_id         [ label = "*id*" ];
+		label = "PostStats";
+		node_a_post_stat_post_id    [ label = "*PostId*" ];
+		node_a_post_stat_score      [ label = "Score" ];
 	}
 
+	node_a_post_stat_score -> node_a_post_counter_up_number [ style = dashed, constraint = false ];
+	node_a_post_stat_score -> node_a_post_counter_up_weight [ style = dashed, constraint = false ];
+	node_a_post_stat_score -> node_a_post_counter_down_number [ style = dashed, constraint = false ];
+	node_a_post_stat_score -> node_a_post_counter_down_weight [ style = dashed, constraint = false ];
+
 	subgraph cluster_post_couter {
-		label = "PostConter";
-		node_a_post_counter_id      [ label = "*id*" ];
+		label = "PostCounters";
+		node_a_post_counter_post_id      [ label = "*PostId*" ];
+		node_a_post_counter_up_number    [ label = "UpNumber" ];
+		node_a_post_counter_down_number  [ label = "DownNumber" ];
+		node_a_post_counter_up_weight    [ label = "UpWeight" ];
+		node_a_post_counter_down_weight  [ label = "DownWeight" ];
 	}
 
 	subgraph cluster_post_2 {
-		label = "Post";
-		node_a_post_id_2        [ label = "*id*" ];
+		label = "Posts";
+		node_a_post_post_id_2        [ label = "*PostId*" ];
+		node_a_post_parent_2         [ label = "Parent" ];
 	}
+
+	node_a_post_parent_2 -> node_a_thread_thread_id;
 
 	subgraph cluster_thread {
-		label = "Thread";
-		node_a_thread_id        [ label = "*id*" ];
-		node_a_thread_default_post_oplist [ label = "default_post_oplist" ];
-		node_a_thread_anonymous [ label = "anonymous" ];
+		label = "Threads";
+		node_a_thread_thread_id           [ label = "*ThreadId*" ];
+		node_a_thread_default_post_oplist [ label = "DefaultPostOplist" ];
+		node_a_thread_anonymous           [ label = "Anonymous" ];
 	}
 
+	node_a_thread_default_post_oplist -> node_a_oplist_oplist_id;
+
 	subgraph cluster_oplist {
-		label = "Oplist";
-		node_a_oplist_id        [ label = "*id*" ];
+		label = "Oplists";
+		node_a_oplist_oplist_id        [ label = "*OplistId*" ];
 	}
 
 	subgraph cluster_user {
-		label = "User";
-		node_a_user_id [ label = "*id*" ];
-		node_a_user_name    [ label = "name" ];
+		label = "Users";
+		node_a_user_user_id [ label = "*UserId*" ];
+		node_a_user_name    [ label = "Name" ];
 	}
 
-
-	node_a_post_parent -> node_a_thread_id;
-	node_a_post_reply_to -> node_a_post_id_2;
-	node_a_post_oplist -> node_a_oplist_id [ label = "using\n default" ];
-	node_a_post_default_post_oplist -> node_a_thread_default_post_oplist [ style = dashed ];
-	node_a_post_anonymous -> node_a_thread_anonymous [style = dashed ];
-	node_a_post_author -> node_a_user_id;
-	node_a_post_author_name -> node_a_user_name     [ style = dashed ];
-
-	node_a_thread_default_post_oplist -> node_a_oplist_id;
-
-	node_a_post_stat_id -> node_a_post_counter_id;
-	node_a_post_counter_id -> node_a_post_id;
 }

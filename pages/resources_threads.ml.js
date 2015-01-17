@@ -34,6 +34,12 @@ class Thread
     Boolean no_post
     String time                     # ISO 8601 format
     Highlight highlight
+    String last_post                # computed,
+    String last_post_time           # computed, i.e. /resources/posts/{last_post}:time
+    Number post_number              # computed
+    Number viewer_number            # computed
+    Number post_to_viewer_ratio     # computed
+    Number popularity_score         # computed
 
 class Highlight
     String color
@@ -43,8 +49,6 @@ class Highlight
 
 \fig{begin}
     \img{pages/graph/erd/threads.png}
-    \alert[info]{\@*key*\@表示该键为主键；\@-key-\@表示该键储存于其他结构中，在此资源内只读；\@<key>\@表示该键为一结构，实线表示外键约束，虚线表示计算}
-
 \fig{end}
 
 \list*{
@@ -65,15 +69,55 @@ class Highlight
         \* \@bold\@加粗
         \* \@italic\@斜体
     }
+    \* \@last_post\@：最新回复
+    \* \@last_post_time\@：最新回复时间 i.e. \@/resources/posts/{last_post}:time\@
+    \* \@post_count\@：总回复数，最小为1
+    \* \@viewer_count\@：总点击数，最小为1
+    \* \@post_to_viewer_ratio\@：i.e. \@posts_count/viewers_count\@
+    \* \@popularity_score\@：i.e. \@(posts_count + log(viewers_count))* post_to_view_ratio/log(now() - time + 1)\@，更多的回复和更对的点击率可以得到更高的分数，而更长的时间得到的分数更低。
 }
 
-\h5{建议数据库Schema}
+\h5{数据库Schema}
 
 SQL Server:
 \code+[sql]{begin}
 
+CREATE TABLE ThreadStats(
+    ThreadId            int NOT NULL UNIQUE,
+    LastPost            int NOT NULL,
+    PostToViewerRatio   float NOT NULL,
+    PopularityScore     float NOT NULL,
+
+    INDEX IDX_PopularityScore (PostToViewerRatio DESC),
+
+    CONSTRAINT PK_ThreadId PRIMARY KEY CLUSTERED (ThreadId DESC),
+    CONSTRAINT FK_ThreadId FOREIGN KEY (ThreadId)
+        -- ThreadStats and ThreadCounters are in an one-to-one relationship.
+        -- ThreadCounters and Threads are in an one-to-one relationship.
+        REFERENCES ThreadCounters (ThreadId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT FK_LastPost FOREIGN KEY (LastPost)
+        REFERENCES Posts (PostId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE ThreadCounters(
+    ThreadId            int NOT NULL UNIQUE,
+    PostNumber          int NOT NULL DEFAULT 1,
+    ViewerNumber        int NOT NULL DEFAULT 1,
+
+    CONSTRAINT PK_ThreadId PRIMARY KEY CLUSTERED (ThreadId DESC),
+    CONSTRAINT FK_ThreadId FOREIGN KEY (ThreadId)
+        REFERENCES Threads (ThreadId)
+        -- ThreadCounters and Threads are in an one-to-one relationship.
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
 CREATE TABLE ThreadsTypeAttributes(
-    Type nvarchar(16) NOT NULL DEFAULT 'topic' PRIMARY KEY,
+    Type nvarchar(16) NOT NULL DEFAULT 'topic' PRIMARY KEY NONCLUSTERED,
     Comment nvarchar(64) NULL
 );
 INSERT INTO ThreadsTypeAttributes (Type) VALUES ('topic', '话题，默认');
@@ -81,7 +125,7 @@ INSERT INTO ThreadsTypeAttributes (Type) VALUES ('qa', '问答');
 INSERT INTO ThreadsTypeAttributes (Type) VALUES ('poll', '投票');
 
 CREATE TABLE ThreadsTopTypeAttributes(
-    Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY,
+    Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY NONCLUSTERED,
     Comment nvarchar(64) NULL
 );
 INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('off', '未置顶，默认');
@@ -90,7 +134,7 @@ INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('parent', '上级版块（�
 INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('top', '全站置顶');
 
 CREATE TABLE ThreadsGoodTypeAttributes(
-    Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY,
+    Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY NONCLUSTERED,
     Comment nvarchar(64) NULL
 );
 INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('off', '未加精华，默认');
@@ -105,7 +149,6 @@ CREATE TABLE Threads(
     FirstPost         int NULL,
     -- for insert the thread record before the first post record without triggering the constraint.
     Title             nvarchar(256) NOT NULL,
-    Author            int NOT NULL,
     Type              nvarchar(16) NOT NULL,
     TopType           nvarchar(16) NOT NULL,
     TopTimeout        datetime NULL, -- NULL means alway on top.
@@ -117,7 +160,6 @@ CREATE TABLE Threads(
     -- e.g. A JSON expression of '{"color": "0x222222", "italic": false, "bold": false}'.
 
     INDEX IDX_Parent (Parent),
-    INDEX IDX_Author (Author),
     INDEX IDX_Type (Type),
     INDEX IDX_TopType (TopType),
     INDEX IDX_GoodType (GoodType),
@@ -142,10 +184,6 @@ CREATE TABLE Threads(
         ON DELETE CASCADE,
         -- when there's no other posts besides the FirstPost in this thread,
         -- deleting the first post would delete the thread.
-    CONSTRAINT FK_Author FOREIGN KEY (Author)
-        REFERENCES Users (UserId)
-        ON UPDATE CASCADE
-        ON DELETE NO ACTION, -- Can not delete a user.
     CONSTRAINT FK_Type FOREIGN KEY (Type)
         -- Use foreign key constraint to limit the values.
         REFERENCES ThreadsTypeAttributes (Type)
@@ -187,50 +225,72 @@ SELECT
     u.Name AS AuthorName,
     t.Time,
     t.Highlight,
-	s.Age,
-	s.PopularityScore
-FROM Posts AS p
-    INNER JOIN Boards AS b on b.BoardId = t.Parent
-    INNER JOIN Posts AS p ON p.Parent = t.ThreadId
-    INNER JOIN Users AS u ON u.UserId = p.Author;
-    INNER JOIN ThreadStats AS s ON s.ThreadId = p.ThreadId;
+    c.PostNumber,
+    c.ViewerNumber,
+    s.PostToViewerRatio,
+    s.PopularityScore,
+    s.LastPost,
+    lp.Time AS LastPostTime
+FROM Threads AS t
+    INNER JOIN Boards AS b         ON b.BoardId = t.Parent
+    INNER JOIN Posts AS p          ON p.PostId = t.FirstPost
+    INNER JOIN Posts AS lp         ON lp.PostId = t.LastPost
+    INNER JOIN Users AS u          ON u.UserId = p.Author
+    INNER JOIN ThreadCounters AS c ON c.ThreadId = t.ThreadId
+    INNER JOIN ThreadStats AS s    ON s.ThreadId = t.ThreadId;
 
+CREATE VIEW  ThreadsViewSortInvtime
+AS
+SELECT * ROW_NUMBER() OVER (ORDER BY Time DESC)
+FROM ThreadsView ORDER BY Time DESC;
+
+CREATE VIEW  ThreadsViewSortMru
+AS
+SELECT * ROW_NUMBER() OVER (ORDER BY LastPostTime DESC)
+FROM ThreadsView ORDER BY LastPostTime DESC;
+
+CREATE VIEW  ThreadsViewSortPop
+AS
+SELECT * ROW_NUMBER() OVER (ORDER BY PopularityScore DESC)
+FROM ThreadsView ORDER BY PopularityScore DESC;
 
 CREATE PROCEDURE getThreadsByParentSortInvtime
-    @parentId int, 
+    @parentId int,
     @count int = 20,
     @offset int = 0
 AS
 BEGIN
-    WITH Output AS
-    (
-        SELECT *, ROW_NUMBER() OVER (ORDER BY Time DESC) AS 'RowNumber'
-        FROM ThreadsView WHERE Parent == @parentId ORDER BY Time DESC
-    ) 
-    SELECT * 
-    FROM Output 
-    WHERE RowNumber BETWEEN @count*@offset+1 AND @count*(@offset+1)
+    SELECT *
+    FROM ThreadsViewSortInvtime
+    WHERE Parent = @parentId  AND RowNumber BETWEEN @count*@offset+1 AND @count*(@offset+1)
 END;
 
 CREATE PROCEDURE getThreadsByParentSortMru
-    @parentId int, 
+    @parentId int,
     @count int = 20,
     @offset int = 0
 AS
 BEGIN
-    WITH Output AS
-    (
-        SELECT *, ROW_NUMBER() OVER (ORDER BY Time DESC) AS 'RowNumber'
-        FROM ThreadsView WHERE Parent == @parentId ORDER BY Time DESC
-    ) 
-    SELECT * 
-    FROM Output 
-    WHERE RowNumber BETWEEN @count*@offset+1 AND @count*(@offset+1)
+    SELECT *
+    FROM ThreadsViewSortMru
+    WHERE Parent = @parentId  AND RowNumber BETWEEN @count*@offset+1 AND @count*(@offset+1)
+END;
+
+CREATE PROCEDURE getThreadsByParentSortPop
+    @parentId int,
+    @count int = 20,
+    @offset int = 0
+AS
+BEGIN
+    SELECT *
+    FROM ThreadsViewSortPop
+    WHERE Parent = @parentId  AND RowNumber BETWEEN @count*@offset+1 AND @count*(@offset+1)
 END;
 
 -- Using case:
-EXECUTE getPostsByParentSortTime 113, 20, 0;
-EXECUTE getPostsByParentSortScore 113, 20, 0;
+EXECUTE getThreadsByParentSortInvtime 113, 20, 0;
+EXECUTE getThreadsByParentSortMru 113, 20, 0;
+EXECUTE getThreadsByParentSortPop 113, 20, 0;
 \code+{end}
 
 
@@ -245,7 +305,7 @@ EXECUTE getPostsByParentSortScore 113, 20, 0;
     \* \@?top_type={$top_type}\@，某一置顶的讨论列表；
     \* \@?good_type={$good_type}\@，某一精华类型的讨论列表；
     \* \@?author={$user_id}\@，某一作者发布的讨论列表；
-    \* \@?sort_by={$method}\@，排序方式，默认为\@'invtime'\@（时间逆序），可选\@'mru'\@（最新回复）。
+    \* \@?sort_by={$method}\@，排序方式，默认为\@'invtime'\@（时间逆序），可选\@'mru'\@（最新回复），\@'pop'\@（热门优先）。
     \* \@?count={$count}&offset={$offset}\@，讨论列表的第\@$count*$offset+1\@到\@$count*$offset+$count\@项，共计\@$count\@项。默认\@$count=20, $offset=0\@。\@$count\@上限为100，即一个请求最多返回100条post的集合。
 }
 过滤器可以组合应用，解析顺序如上述。
@@ -273,11 +333,6 @@ HTTP/1.1 200 OK
     "source": "threads/",
     "base": "/resources/",
     "links": {
-        "threadstats": {
-            "href": "threadstats/{id}",
-            "method": "GET",
-            "description": "统计信息"
-        },
         "post": {
             "href": "threads/?parent={parent}",
             "method": "POST",
@@ -369,8 +424,7 @@ GET方法用于获取资源。
 
 获取特定讨论时使用\@/resources/threads/{$id}\@。
 
-返回的JSON格式为：
-
+返回完整的资源。
 \code+[json]{begin}
 {
     "threads": {
@@ -381,8 +435,11 @@ GET方法用于获取资源。
     "source": "threads/{id}",
     "base": "/resources/"
 }
-
 \code+{end}
+
+\alert{
+小心处理匿名情况：后端需要检查用户是否有oplist中定义的view_anonymous权限，如果有，返回author和author_name；如果没有，则author为空，author_name由原始的用户名hash而来。
+}
 
 为了避免频繁刷新带来的资源浪费，回复列表的cache策略稍有改动：
 \alert[info]{
@@ -390,6 +447,8 @@ GET方法用于获取资源。
 有parent过滤器时，max-age:days, must-revalidate，获得某一讨论的回复列表}
 
 获取资源列表时使用\@/resources/threads/\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=invtime&count=20&offset=0\@。
+
+获取资源列表内仅仅包括\@id\@ \@parent\@ \@type\@ \@top_type\@ \@good_type\@ \@title\@ \@highlight\@ \@author\@ \@author_name\@ \@post_number\@，需要其他信息的，则需要使用访问特定讨论的接口。
 
 \code+[json]{begin}
 
@@ -407,7 +466,7 @@ GET方法用于获取资源。
     ],
     "links": {
         "first_page": {
-            "href": "threads/?parent=14&sort_by=invtime&count=20&offset=0",
+            "href": "threads/?parent={parent}&sort_by=invtime&count=20&offset=0",
             "method": "GET",
             "description": "第一页"
         },
@@ -417,27 +476,23 @@ GET方法用于获取资源。
             "description": "前一页"
         },
         "next_page": {
-            "href": "threads/?parent=14&sort_by=invtime&count=20&offset=2",
+            "href": "threads/?parent={parent}&sort_by=invtime&count=20&offset=2",
             "method": "GET",
             "description": "后一页"
         },
         "last_page": {
-            "href": "threads/?parent=14&sort_by=invtime&count=20&offset=163",
+            "href": "threads/?parent={parent}&sort_by=invtime&count=20&offset=163",
             "method": "GET",
             "description": "最后页"
         }
     },
     "item": "threads/{id}",
-    "self": "threads/?parent=14&sort_by=invtime&count=20&offset=0",
+    "self": "threads/?parent={parent}&sort_by=invtime&count=20&offset=0",
     "source": "threads/",
     "base": "/resources/"
 }
 
 \code+{end}
-
-\alert{
-小心处理匿名情况：后端需要检查用户是否有oplist中定义的view_anonymous权限，如果有，返回author和author_name；如果没有，则author为空，author_name由原始的用户名hash而来。
-}
 
 links包括了页面间跳转的方法。
 
