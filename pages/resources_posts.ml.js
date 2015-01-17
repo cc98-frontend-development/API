@@ -19,11 +19,16 @@ class Post
     String author
     String author_name          # computed, i.e. /resources/users/{author}:name
     String default_post_oplist  # computed, i.e. /resources/threads/{parent}:default_post_oplist
-    Boolean enabled   
-    Boolean hidden    
+    Boolean enabled
+    Boolean hidden
     Boolean anonymous           # computed, i.e. /resources/threads/{parent}:anonymous
     String content
     String time                 # ISO 8601 format
+    Number up_number            # computed
+    Number down_number          # computed
+    Number up_weight            # computed
+    Number down_weight          # computed
+    Number score                # computed
 
 \code+{end}
 
@@ -41,11 +46,47 @@ class Post
     \* \@hidden\@通常为false，当为true时表示这个回复可以被隐藏
     \* \@anonymous\@，是否匿名，由上级资源（讨论）指定，默认为false，为true时，author为空，author_name为hashed
     \* \@author_name\@，储存于\@/resources/users/{author}:name\@
+    \* \@time\@，回复发表时间，ISO 8601格式
+	\* \@up_number\@，点赞同的人数
+	\* \@down_number\@，点反对的人数
+	\* \@up_weight\@，计算时赞同的权重
+	\* \@down_weight\@，计算时反对的权重
+    \* \@score\@：由\@up_number\@\@down_number\@\@up_weight\@\@down_weight\@计算得出的一个用于确定排位顺序的分数，比如：\@ score = (up_number * log(up_weight)) / (down_weight * log(down_weight)) \@
 }
 
 \h5{数据库Schema}
 
 \code+[sql]{begin}
+
+CREATE TABLE PostCounters(
+    PostId     int NOT NULL UNIQUE,
+    UpNumber   int NOT NULL,
+    DownNumber int NOT NULL,
+    UpWeight   int NOT NULL,
+    DownWeight int NOT NULL,
+
+    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId),
+    -- PostCounters and Posts are in an one-to-one relationship.
+    CONSTRAINT FK_PostId FOREIGN KEY (PostId)
+        REFERENCES Posts (PostId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE PostStats(
+    PostId  int NOT NULL UNIQUE,
+    Score   float NOT NULL,
+
+    INDEX IDX_Score (Score DESC),
+
+    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC),
+    CONSTRAINT FK_PostId FOREIGN KEY (PostId)
+        -- PostStats and PostCounters are in an one-to-one relationship.
+        -- PostCounters and Posts are in an one-to-one relationship.
+        REFERENCES PostCounters (PostId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
 
 CREATE TABLE Posts(
     PostId  int NOT NULL IDENTITY,
@@ -59,11 +100,12 @@ CREATE TABLE Posts(
     Time    datetime NOT NULL,
 
     INDEX IDX_Parent (Parent),
+    INDEX IDX_ReplyTo (ReplyTo),
     INDEX IDX_Author (Author),
     INDEX IDX_Time (Time DESC),
     -- for default order: ORDEY BY (Time DESC)
 
-    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC),
+    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId),
     CONSTRAINT FK_Parent FOREIGN KEY (Parent)
         REFERENCES Threads (ThreadId)
         ON UPDATE CASCADE
@@ -99,46 +141,51 @@ SELECT
     p.Hidden,
     p.Content,
     p.Author,
-    p.Time,
     u.Name AS AuthorName,
+    p.Time,
     t.DefaultPostOplist,
     t.Anonymous,
+    c.UpNumber,
+    c.DownNumber,
+    c.UpWeight,
+    c.DownWeight,
     s.Score
 FROM Posts AS p
-    INNER JOIN Users AS u ON u.UserId = p.Author
-    INNER JOIN Threads AS t ON t.ThreadId = p.Parent
-    INNER JOIN PostCounters AS s on s.PostId = p.PostId;
+    INNER JOIN Users AS u        ON u.UserId = p.Author
+    INNER JOIN Threads AS t      ON t.ThreadId = p.Parent
+    INNER JOIN PostCounters AS c ON c.PostId = p.PostId
+    INNER JOIN PostStats AS s    ON s.PostId = p.PostId;
+
+CREATE VIEW  PostsViewSortTime
+AS
+SELECT * ROW_NUMBER() OVER (ORDER BY Time ASC)
+FROM PostsView ORDER BY Time ASC;
+
+CREATE VIEW  PostsViewSortScore
+AS
+SELECT * ROW_NUMBER() OVER (ORDER BY Score ASC)
+FROM PostsView ORDER BY Score ASC;
 
 CREATE PROCEDURE getPostsByParentSortTime
-    @parentId int, 
+    @parentId int,
     @count int = 20,
     @offset int = 0
 AS
 BEGIN
-    WITH Output AS
-    (
-        SELECT *, ROW_NUMBER() OVER (ORDER BY Time) AS 'RowNumber'
-        FROM PostsView WHERE Parent == @parentId ORDER BY Time
-    ) 
-    SELECT * 
-    FROM Output 
-    WHERE RowNumber BETWEEN @count*@offset+1 AND @count*(@offset+1)
+    SELECT *
+    FROM PostsViewSortTime
+    WHERE Parent = @parentId  AND RowNumber BETWEEN @count*@offset+1 AND @count*(@offset+1)
 END;
 
 CREATE PROCEDURE getPostsByParentSortScore
-    @parentId int, 
+    @parentId int,
     @count int = 20,
     @offset int = 0
 AS
 BEGIN
-    WITH Output AS
-    (
-        SELECT *, ROW_NUMBER() OVER (ORDER BY Score) AS 'RowNumber'
-        FROM PostsView WHERE Parent == @parentId ORDER BY Score
-    ) 
-    SELECT * 
-    FROM Output 
-    WHERE RowNumber BETWEEN @count*@offset+1 AND @count*(@offset+1)
+    SELECT *
+    FROM PostsViewSortScore
+    WHERE Parent = @parentId  AND RowNumber BETWEEN @count*@offset+1 AND @count*(@offset+1)
 END;
 
 -- Using case:
@@ -185,11 +232,6 @@ Allow: OPTIONS, GET
     "source": "posts/",
     "base": "/resources/",
     "links": {
-        "poststats": {
-            "href": "poststats/{id}",
-            "method": "GET",
-            "description": "统计信息"
-        },
         "reply": {
             "href": "posts/{id}",
             "method": "POST",
@@ -274,6 +316,8 @@ Allow: OPTIONS, GET
 GET方法用于获取资源。
 
 获取特定回复时使用\@/resources/posts/{$id}\@。
+
+返回完整的资源。
 \alert[info]{max-age:days, must-revalidate}
 
 \code+[json]{begin}
@@ -297,6 +341,10 @@ GET方法用于获取资源。
 
 获取资源列表时使用\@/resources/posts/\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=time&count=20&offset=0\@。
 
+\alert{
+小心处理匿名情况：后端需要检查用户是否有parent（讨论）oplist中定义的view_anonymous权限，如果有，返回author和author_name；如果没有，则author为空，author_name由原始的用户名hash而来。
+}
+
 \code+[json]{begin}
 
 {
@@ -313,7 +361,7 @@ GET方法用于获取资源。
     ],
     "links": {
         "first_page": {
-            "href": "posts/?parent=161&sort_by=time&count=20&offset=0",
+            "href": "posts/?parent={parent}&sort_by=time&count=20&offset=0",
             "method": "GET",
             "description": "第一页"
         },
@@ -323,29 +371,25 @@ GET方法用于获取资源。
             "description": "前一页"
         },
         "next_page": {
-            "href": "posts/?parent=161&sort_by=time&count=20&offset=2",
+            "href": "posts/?parent={parent}&sort_by=time&count=20&offset=2",
             "method": "GET",
             "description": "后一页"
         },
         "last_page": {
-            "href": "posts/?parent=161&sort_by=time&count=20&offset=23",
+            "href": "posts/?parent={parent}&sort_by=time&count=20&offset=23",
             "method": "GET",
             "description": "最后页"
         }
     },
     "item": "posts/{id}",
-    "self": "posts/?parent=161&sort_by=time&count=20&offset=0",
+    "self": "posts/?parent={parent}&sort_by=time&count=20&offset=0",
     "source": "posts/",
     "base": "/resources/"
 }
 
 \code+{end}
 
-\alert{
-小心处理匿名情况：后端需要检查用户是否有parent（讨论）oplist中定义的view_anonymous权限，如果有，返回author和author_name；如果没有，则author为空，author_name由原始的用户名hash而来。
-}
 links包括了页面间跳转的方法。
-
 
 \h4{新建资源：POST}
 
