@@ -371,7 +371,7 @@ GET方法用于获取资源。
             "description": "前一页"
         },
         "next_page": {
-            "href": "posts/?parent={parent}&sort_by=time&count=20&offset=2",
+            "href": "posts/?parent={parent}&sort_by=time&count=20&offset=1",
             "method": "GET",
             "description": "后一页"
         },
