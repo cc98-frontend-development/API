@@ -14,6 +14,7 @@ strict digraph g {
 		node_a_thread_first_post            [ label = "first_post" ];
 		node_a_thread_type                  [ label = "type" ];
 		node_a_thread_top_type              [ label = "top_type" ];
+		node_a_thread_top_timeout           [ label = "top_timeout" ];
 		node_a_thread_good_type             [ label = "good_type" ];
 		node_a_thread_no_post               [ label = "no_post" ];
 		node_a_thread_hidden                [ label = "hidden" ];

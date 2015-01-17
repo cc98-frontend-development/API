@@ -10,7 +10,6 @@
 
 讨论资源里记录了该讨论的第一个的回复，在该讨论里的回复在没有指定其他回复时默认回复这个第一回复。
 
-
 \h4{数据结构}
 
 \h5{JSON API}
@@ -28,7 +27,8 @@ class Thread
     String author                   # computed, i.e. /resources/posts/{first_post}:author, /resources/user/{author}
     String author_name              # computed, i.e. /resources/users/{author}:name
     String type                     # 'topic' 'qa' 'poll'
-    String top_type                 # 'off' 'temp' 'board' 'parent' 'top'
+    String top_type                 # 'off' 'board' 'parent' 'top'
+    String top_timeout              # ISO 8601 format
     String good_type                # 'off' 'reserved' 'elite'
     Boolean anonymous
     Boolean no_post
@@ -52,7 +52,8 @@ class Highlight
     \* \@default_thread_oplist\@，讨论的默认oplist，储存于\@/resources/boards/{parent}:default_thread_oplist\@
     \* \@default_post_oplist\@，讨论中回复的默认oplist
     \* \@type\@回复类型，'topic'（话题） 'qa'（问答） 'poll'（投票）
-    \* \@top_type\@置顶类型，'off'（无置顶） 'temp'（临时置顶） 'board'（板块置顶） 'parent'（上级板块置顶） 'top'（全站置顶）
+    \* \@top_type\@置顶类型，'off'（无置顶） 'board'（板块置顶） 'parent'（上级板块置顶） 'top'（全站置顶）
+    \* \@top_timeout\@置顶过期时间，NULL表示永久置顶。
     \* \@good_type\@精华类型，'off'（未加精华） 'reserved'（保留回复） 'elite'（精华回复）
     \* \@anonymous\@，此讨论是否为匿名讨论，默认为\@false\@
     \* \@no_post\@，此讨论是否关闭回复，默认为\@false\@
@@ -72,27 +73,29 @@ SQL Server:
 \code+[sql]{begin}
 
 CREATE TABLE ThreadsTypeAttributes(
-    Type nvarchar(16) NOT NULL DEFAULT 'topic' PRIMARY KEY
+    Type nvarchar(16) NOT NULL DEFAULT 'topic' PRIMARY KEY,
+    Comment nvarchar(64) NULL
 );
-INSERT INTO ThreadsTypeAttributes (Type) VALUES ('topic');
-INSERT INTO ThreadsTypeAttributes (Type) VALUES ('qa');
-INSERT INTO ThreadsTypeAttributes (Type) VALUES ('poll');
+INSERT INTO ThreadsTypeAttributes (Type) VALUES ('topic', '话题，默认');
+INSERT INTO ThreadsTypeAttributes (Type) VALUES ('qa', '问答');
+INSERT INTO ThreadsTypeAttributes (Type) VALUES ('poll', '投票');
 
 CREATE TABLE ThreadsTopTypeAttributes(
-    Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY
+    Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY,
+    Comment nvarchar(64) NULL
 );
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('off');
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('temp');
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('board');
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('parent');
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('top');
+INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('off', '未置顶，默认');
+INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('board', '本版置顶') ;
+INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('parent', '上级版块（区）置顶');
+INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('top', '全站置顶');
 
 CREATE TABLE ThreadsGoodTypeAttributes(
-    Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY
+    Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY,
+    Comment nvarchar(64) NULL
 );
-INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('off');
-INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('reserved');
-INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('elite');
+INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('off', '未加精华，默认');
+INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('reserved', '保留');
+INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('elite', '精华');
 
 CREATE TABLE Threads(
     ThreadId          int NOT NULL IDENTITY,
@@ -105,6 +108,7 @@ CREATE TABLE Threads(
     Author            int NOT NULL,
     Type              nvarchar(16) NOT NULL,
     TopType           nvarchar(16) NOT NULL,
+    TopTimeout        datetime NULL, -- NULL means alway on top.
     GoodType          nvarchar(16) NOT NULL,
     Anonymous         bit NOT NULL,
     NoPost            bit NOT NULL,
@@ -175,17 +179,58 @@ SELECT
     t.Title,
     t.Type,
     t.TopType,
+    t.TopTimeout,
     t.GoodType,
     t.Anonymous,
     t.NoPost,
     p.Author,
     u.Name AS AuthorName,
     t.Time,
-    t.Highlight
+    t.Highlight,
+	s.Age,
+	s.PopularityScore
 FROM Posts AS p
     INNER JOIN Boards AS b on b.BoardId = t.Parent
     INNER JOIN Posts AS p ON p.Parent = t.ThreadId
     INNER JOIN Users AS u ON u.UserId = p.Author;
+    INNER JOIN ThreadStats AS s ON s.ThreadId = p.ThreadId;
+
+
+CREATE PROCEDURE getThreadsByParentSortInvtime
+    @parentId int, 
+    @count int = 20,
+    @offset int = 0
+AS
+BEGIN
+    WITH Output AS
+    (
+        SELECT *, ROW_NUMBER() OVER (ORDER BY Time DESC) AS 'RowNumber'
+        FROM ThreadsView WHERE Parent == @parentId ORDER BY Time DESC
+    ) 
+    SELECT * 
+    FROM Output 
+    WHERE RowNumber BETWEEN @count*@offset+1 AND @count*(@offset+1)
+END;
+
+CREATE PROCEDURE getThreadsByParentSortMru
+    @parentId int, 
+    @count int = 20,
+    @offset int = 0
+AS
+BEGIN
+    WITH Output AS
+    (
+        SELECT *, ROW_NUMBER() OVER (ORDER BY Time DESC) AS 'RowNumber'
+        FROM ThreadsView WHERE Parent == @parentId ORDER BY Time DESC
+    ) 
+    SELECT * 
+    FROM Output 
+    WHERE RowNumber BETWEEN @count*@offset+1 AND @count*(@offset+1)
+END;
+
+-- Using case:
+EXECUTE getPostsByParentSortTime 113, 20, 0;
+EXECUTE getPostsByParentSortScore 113, 20, 0;
 \code+{end}
 
 
@@ -249,7 +294,7 @@ HTTP/1.1 200 OK
             "description": "删除此讨论"
         },
         "top": {
-            "href": "threads/{id}?top={$top_type}",
+            "href": "threads/{id}?top={$top_type}&timeout={$top_timeout}",
             "method": "PUT",
             "description": "置顶此讨论"
         },
@@ -443,10 +488,10 @@ links包括了页面间跳转的方法。
     \d 第一回复，格式参考\link+[回复]{#/resources_posts.ml.js}，但无须指定其\@parent\@
 }
 \r{
-    \d \@top_type\@
+    \d \@top_type\@ \@top_timeout\@
     \d \@String\@
     \d optional
-    \d 置顶类型，\@'off'\@（默认） \@'temp'\@ \@'board'\@ \@'parent'\@ \@'top'\@中任一，检查用户有此板块相应的\@top\@权限
+    \d \@top_type\@置顶类型，\@'off'\@（默认） \@'board'\@ \@'parent'\@ \@'top'\@中任一；\@top_timeout\@过期时间，ISO 8601格式，默认为\@null\@，检查用户有此板块相应的\@top\@权限
 }
 \r{
     \d \@good_type\@
@@ -524,7 +569,7 @@ links包括了页面间跳转的方法。
 \r{
     \d \@top_type\@
     \d \@String\@
-    \d \@top($id, $top_type)\@
+    \d \@top($id, $top_type, $timeout)\@
     \d 置顶，检查相应的top权限
 }
 \r{
