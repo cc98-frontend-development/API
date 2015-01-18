@@ -71,10 +71,10 @@ class Highlight
     }
     \* \@last_post\@：最新回复
     \* \@last_post_time\@：最新回复时间 i.e. \@/resources/posts/{last_post}:time\@
-    \* \@post_count\@：总回复数，最小为1
-    \* \@viewer_count\@：总点击数，最小为1
-    \* \@post_to_viewer_ratio\@：i.e. \@posts_count/viewers_count\@
-    \* \@popularity_score\@：i.e. \@(posts_count + log(viewers_count))* post_to_view_ratio/log(now() - time + 1)\@，更多的回复和更对的点击率可以得到更高的分数，而更长的时间得到的分数更低。
+    \* \@post_number\@：总回复人数，最小为1
+    \* \@viewer_number\@：总点击人数，最小为1
+    \* \@post_to_viewer_ratio\@：i.e. \@posts_number/viewers_number\@
+    \* \@popularity_score\@：i.e. \@(posts_number + log(viewers_number))* post_to_viewer_ratio/log(now() - time + 1)\@，更多的回复和更对的点击率可以得到更高的分数，而更长的时间得到的分数更低。
 }
 
 \h5{数据库Schema}
