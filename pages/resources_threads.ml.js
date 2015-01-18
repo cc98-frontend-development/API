@@ -116,6 +116,23 @@ CREATE TABLE ThreadCounters(
         ON DELETE CASCADE
 );
 
+CREATE TABLE ThreadxViewer(
+    -- An N to N relationship.
+    -- A crosstab that allows find Viewer by Thread or find Thread by Viewer.
+    ThreadId    int NOT NULL,
+    ViewerId    int NOT NULL,
+
+    CONSTRAINT PK_ThreadIdxViewerId PRIMARY KEY CLUSTERED (ThreadId, ViewerId),
+    CONSTRAINT FK_ThreadId FOREIGN KEY (ThreadId)
+        REFERENCES Threads (ThreadId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT FK_ViewerId FOREIGN KEY (ViewerId)
+        REFERENCES Users (UserId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
 CREATE TABLE ThreadsTypeAttributes(
     Type nvarchar(16) NOT NULL DEFAULT 'topic' PRIMARY KEY NONCLUSTERED,
     Comment nvarchar(64) NULL
