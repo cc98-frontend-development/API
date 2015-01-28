@@ -73,8 +73,8 @@ class Highlight
     \* \@last_post_time\@：最新回复时间 i.e. \@/resources/posts/{last_post}:time\@
     \* \@post_number\@：总回复人数，最小为1
     \* \@viewer_number\@：总点击人数，最小为1
-    \* \@post_to_viewer_ratio\@：i.e. \@posts_number/viewers_number\@
-    \* \@popularity_score\@：i.e. \@(posts_number + log(viewers_number))* post_to_viewer_ratio/log(now() - time + 1)\@，更多的回复和更对的点击率可以得到更高的分数，而更长的时间得到的分数更低。
+    \* \@post_to_viewer_ratio\@：i.e. \@post_number/viewer_number\@
+    \* \@popularity_score\@：i.e. \@(post_number + log(viewer_number))* post_to_viewer_ratio/log(now() - time + 1)\@，更多的回复和更对的点击率可以得到更高的分数，而更长的时间得到的分数更低。
 }
 
 \h5{数据库Schema}
@@ -90,7 +90,7 @@ CREATE TABLE ThreadStats(
 
     INDEX IDX_PopularityScore (PostToViewerRatio DESC),
 
-    CONSTRAINT PK_ThreadId PRIMARY KEY CLUSTERED (ThreadId DESC),
+    CONSTRAINT PK_ThreadId PRIMARY KEY CLUSTERED (ThreadId),
     CONSTRAINT FK_ThreadId FOREIGN KEY (ThreadId)
         -- ThreadStats and ThreadCounters are in an one-to-one relationship.
         -- ThreadCounters and Threads are in an one-to-one relationship.
@@ -108,27 +108,10 @@ CREATE TABLE ThreadCounters(
     PostNumber          int NOT NULL DEFAULT 1,
     ViewerNumber        int NOT NULL DEFAULT 1,
 
-    CONSTRAINT PK_ThreadId PRIMARY KEY CLUSTERED (ThreadId DESC),
+    CONSTRAINT PK_ThreadId PRIMARY KEY CLUSTERED (ThreadId),
     CONSTRAINT FK_ThreadId FOREIGN KEY (ThreadId)
         REFERENCES Threads (ThreadId)
         -- ThreadCounters and Threads are in an one-to-one relationship.
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
-);
-
-CREATE TABLE ThreadxViewer(
-    -- An N to N relationship.
-    -- A crosstab that allows find Viewer by Thread or find Thread by Viewer.
-    ThreadId    int NOT NULL,
-    ViewerId    int NOT NULL,
-
-    CONSTRAINT PK_ThreadIdxViewerId PRIMARY KEY CLUSTERED (ThreadId, ViewerId),
-    CONSTRAINT FK_ThreadId FOREIGN KEY (ThreadId)
-        REFERENCES Threads (ThreadId)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT FK_ViewerId FOREIGN KEY (ViewerId)
-        REFERENCES Users (UserId)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
@@ -137,26 +120,26 @@ CREATE TABLE ThreadsTypeAttributes(
     Type nvarchar(16) NOT NULL DEFAULT 'topic' PRIMARY KEY NONCLUSTERED,
     Comment nvarchar(64) NULL
 );
-INSERT INTO ThreadsTypeAttributes (Type) VALUES ('topic', '话题，默认');
-INSERT INTO ThreadsTypeAttributes (Type) VALUES ('qa', '问答');
-INSERT INTO ThreadsTypeAttributes (Type) VALUES ('poll', '投票');
+INSERT INTO ThreadsTypeAttributes (Type, Comment) VALUES ('topic', '话题，默认');
+INSERT INTO ThreadsTypeAttributes (Type, Comment) VALUES ('qa', '问答');
+INSERT INTO ThreadsTypeAttributes (Type, Comment) VALUES ('poll', '投票');
 
 CREATE TABLE ThreadsTopTypeAttributes(
     Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY NONCLUSTERED,
     Comment nvarchar(64) NULL
 );
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('off', '未置顶，默认');
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('board', '本版置顶') ;
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('parent', '上级版块（区）置顶');
-INSERT INTO ThreadsTopTypeAttributes (Type) VALUES ('top', '全站置顶');
+INSERT INTO ThreadsTopTypeAttributes (Type, Comment) VALUES ('off', '未置顶，默认');
+INSERT INTO ThreadsTopTypeAttributes (Type, Comment) VALUES ('board', '本版置顶') ;
+INSERT INTO ThreadsTopTypeAttributes (Type, Comment) VALUES ('parent', '上级版块（区）置顶');
+INSERT INTO ThreadsTopTypeAttributes (Type, Comment) VALUES ('top', '全站置顶');
 
 CREATE TABLE ThreadsGoodTypeAttributes(
     Type nvarchar(16) NOT NULL DEFAULT 'off' PRIMARY KEY NONCLUSTERED,
     Comment nvarchar(64) NULL
 );
-INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('off', '未加精华，默认');
-INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('reserved', '保留');
-INSERT INTO ThreadsGoodTypeAttributes (Type) VALUES ('elite', '精华');
+INSERT INTO ThreadsGoodTypeAttributes (Type, Comment) VALUES ('off', '未加精华，默认');
+INSERT INTO ThreadsGoodTypeAttributes (Type, Comment) VALUES ('reserved', '保留');
+INSERT INTO ThreadsGoodTypeAttributes (Type, Comment) VALUES ('elite', '精华');
 
 CREATE TABLE Threads(
     ThreadId          int NOT NULL IDENTITY,
@@ -182,7 +165,7 @@ CREATE TABLE Threads(
     INDEX IDX_GoodType (GoodType),
     INDEX IDX_Time (Time DESC),
 
-    CONSTRAINT PK_ThreadId PRIMARY KEY CLUSTERED (ThreadId DESC),
+    CONSTRAINT PK_ThreadId PRIMARY KEY CLUSTERED (ThreadId),
     CONSTRAINT FK_Parent FOREIGN KEY (Parent)
         REFERENCES Boards (BoardId)
         ON UPDATE CASCADE
@@ -465,7 +448,7 @@ GET方法用于获取资源。
 
 获取资源列表时使用\@/resources/threads/\@，通过过滤器获得需要的资源列表。默认的过滤器为\@?sort_by=invtime&count=20&offset=0\@。
 
-获取资源列表内仅仅包括\@id\@ \@parent\@ \@type\@ \@top_type\@ \@good_type\@ \@title\@ \@highlight\@ \@author\@ \@author_name\@ \@post_number\@，需要其他信息的，则需要使用访问特定讨论的接口。
+获取资源列表内仅仅包括\@id\@ \@parent\@ \@type\@ \@top_type\@ \@good_type\@ \@title\@ \@highlight\@ \@author\@ \@author_name\@ \@post_number\@ \@viewer_number\@，需要其他信息的，则需要使用访问特定讨论的接口。
 
 \code+[json]{begin}
 

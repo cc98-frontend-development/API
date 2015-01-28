@@ -79,7 +79,7 @@ CREATE TABLE PostStats(
 
     INDEX IDX_Score (Score DESC),
 
-    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC),
+    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId),
     CONSTRAINT FK_PostId FOREIGN KEY (PostId)
         -- PostStats and PostCounters are in an one-to-one relationship.
         -- PostCounters and Posts are in an one-to-one relationship.

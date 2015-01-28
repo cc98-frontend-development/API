@@ -23,17 +23,35 @@ class Boards
     String default_board_oplist     # computed, i.e. /resources/boards/{parent}:default_board_oplist, /resources/oplists/{default_board_oplist}
     String default_thread_oplist    # /resources/oplists/{default_thread_oplist}
     String default_post_oplist      # /resources/oplists/{default_post_oplist}
-    String icon_url
+    String icon_url                 # computed
+    String last_thread_id
+    String last_post_id
+    Number post_number_total
+    Number post_number_today
+    Number thread_number_total
+    Number thread_number_today
+    Number viewer_number_total
+    Number viewer_number_today
+
 \code+{end}
 
 \list*{
     \* \@parent\@，指向上级（板块）,\@parent == 0\@表示为总版，\@parent == NULL\@表示全站根板块，其余为各个子板块。
     \* \@title\@，板块名，纯文本
     \* \@description\@，板块简介，纯文本
+    \* \@oplist\@，版块当前oplist
     \* \@default_board_oplist\@，板块的默认oplist，储存于\@/resources/boards/{parent}:default_board_oplist\@
     \* \@default_thread_oplist\@，讨论的默认oplist
     \* \@default_post_oplist\@，讨论中回复的默认oplist
-    \* \@icon_url\@，图标的访问地址
+    \* \@icon_url\@，图标的访问地址，图标存于数据库中，地址由后端生成。
+    \* \@last_thread_id\@: 记录最新发表讨论id。
+    \* \@last_post_id\@: 记录最新发表回复id。
+    \* \@thread_number_total\@: 记录版块下的总讨论数。
+    \* \@thread_number_today\@: 记录版块下今日讨论数。
+    \* \@viewer_number_total\@: 记录版块下的总讨论查看数。
+    \* \@viewer_number_today\@: 记录版块下今日讨论查看数。
+    \* \@post_number_total\@: 记录版块下的总回复数。
+    \* \@post_number_today\@: 记录版块下今日回复数。
 }
 
 \h5{数据库Schema}
@@ -43,7 +61,8 @@ class Boards
 CREATE TABLE Icons(
     IconId int NOT NULL IDENTITY,
     Icon varbinary(max) NOT NULL,
-    Description nvarchar(128) NULL DEFAULT NULL,
+    MIMEType nvarchar(64) NULL DEFAULT NULL,
+    Path nvarchar(128) NULL DEFAULT NULL,
     CONSTRAINT PK_IconId PRIMARY KEY CLUSTERED (IconId ASC),
 );
 
@@ -54,6 +73,7 @@ CREATE TABLE Boards(
     Title nvarchar(64) NOT NULL,
     Description nvarchar(256) NOT NULL,
     Oplist int NOT NULL,
+    DefaultBoardOplist int NOT NULL,
     DefaultThreadOplist int NOT NULL,
     DefaultPostOplist int NOT NULL
     IconId int NOT NULL,
@@ -64,22 +84,77 @@ CREATE TABLE Boards(
     CONSTRAINT FK_Parent FOREIGN KEY (Parent)
         REFERENCES Boards (BoardId)
         ON UPDATE CASCADE
-        ON DELETE CASCADE,
+        ON DELETE NO ACTION, -- Can not delete a board with sub-borads.
     CONSTRAINT FK_Oplist FOREIGN KEY (Oplist)
         REFERENCES Oplists (OplistId)
         ON UPDATE CASCADE
-        ON DELETE CASCADE,
+        ON DELETE NO ACTION, -- Can not delete an oplist in use.
+    CONSTRAINT FK_DefaultBoradOplist FOREIGN KEY (DefaultBoardOplist)
+        REFERENCES Oplists (OplistId)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION, -- Can not delete an oplist in use.
     CONSTRAINT FK_DefaultThreadOplist FOREIGN KEY (DefaultThreadOplist)
         REFERENCES Oplists (OplistId)
         ON UPDATE CASCADE
-        ON DELETE CASCADE,
+        ON DELETE NO ACTION, -- Can not delete an oplist in use.
     CONSTRAINT FK_DefaultPostOplist FOREIGN KEY (DefaultPostOplist)
         REFERENCES Oplists (OplistId)
         ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON DELETE NO ACTION, -- Can not delete an oplist in use.
+    CONSTRAINT FK_IconId FOREIGN KEY (IconId)
+        REFERENCES Icons (IconId)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION -- Can not delete an icon in use.
+);
+
+CREATE TABLE BoardStats(
+    BoardId             int NOT NULL UNIQUE,
+    PostNumberTotal     int NOT NULL,
+    PostNumberToday     int NOT NULL,
+    ThreadNumberTotal   int NOT NULL,
+    ThreadNumberToday   int NOT NULL,
+    ViewerNumberTotal   int NOT NULL,
+    ViewerNumberToday   int NOT NULL,
+
+    CONSTRAINT PK_BoardId PRIMARY KEY CLUSTERED (BoardId),
+    CONSTRAINT FK_BoardId FOREIGN KEY (BoardId)
+        -- BoardCounters and Boards are in an one-to-one relationship.
+        REFERENCES Boards (BoardId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
 );
 
 \code+{end}
+
+\h5{数据库View}
+\code+[sql]{begin}
+
+CREATE VIEW BoardsView AS
+SELECT
+    b.BoardId AS Id,
+    b.Parent,
+    b.Oplist,
+    b.Title,
+    b.Description,
+    i.Path AS IconUrl,
+    pb.DefaultBoardOplist,
+    b.DefaultPostOplist,
+    b.DefaultThreadOplist
+FROM Boards AT b
+    INNER JOIN Boards as pb         ON pb.BoardsId = b.Parent
+    INNER JOIN Icons as i           ON i.IconId = b.IconId
+    INNER JOIN BoardCouters AS c    ON c.BoardId = b.BoardId
+    INNER JOIN BoardStats AS s      ON s.BoardId = b.BoardId;
+
+CREATE PROCEDURE getBoardsByParent
+    @parentId int
+AS
+BEGIN
+    SELECT * FROM BoardsView
+    WHERE Parent = @parentId
+END;
+\code+{end}
+
 
 \h4{入口和过滤器}
 

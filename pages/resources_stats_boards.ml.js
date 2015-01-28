@@ -10,16 +10,16 @@
 \h4{数据结构}
 
 \code+[coffee]{begin}
-    class PostStat
-        String board_id
-        String last_thread_id
-        String last_post_id
-        Number thread_count_total
-        Number thread_count_today
-        Number thread_view_total
-        Number thread_view_today
-        Number post_count_total
-        Number post_count_today
+class PostStat
+    String board_id
+    String last_thread_id
+    String last_post_id
+    Number thread_count_total
+    Number thread_count_today
+    Number thread_view_total
+    Number thread_view_today
+    Number post_count_total
+    Number post_count_today
 
 \code+{end}
 
