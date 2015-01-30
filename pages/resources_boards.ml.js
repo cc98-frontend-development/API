@@ -26,6 +26,7 @@ class Boards
     String icon_url                 # computed
     String last_thread_id
     String last_post_id
+    # Activity statistics:
     Number post_number_total
     Number post_number_today
     Number thread_number_total
@@ -36,7 +37,7 @@ class Boards
 \code+{end}
 
 \list*{
-    \* \@parent\@，指向上级（板块）,\@parent == 0\@表示为总版，\@parent == NULL\@表示全站根板块，其余为各个子板块。
+    \* \@parent\@，指向上级（板块）,\@parent == 0\@表示为主版（子版块是一级版块），\@parent == NULL\@表示根板块，其余为各个子板块。
     \* \@title\@，板块名，纯文本
     \* \@description\@，板块简介，纯文本
     \* \@oplist\@，版块当前oplist
@@ -46,12 +47,12 @@ class Boards
     \* \@icon_url\@，图标的访问地址，图标存于数据库中，地址由后端生成。
     \* \@last_thread_id\@: 记录最新发表讨论id。
     \* \@last_post_id\@: 记录最新发表回复id。
-    \* \@thread_number_total\@: 记录版块下的总讨论数。
-    \* \@thread_number_today\@: 记录版块下今日讨论数。
-    \* \@viewer_number_total\@: 记录版块下的总讨论查看数。
-    \* \@viewer_number_today\@: 记录版块下今日讨论查看数。
-    \* \@post_number_total\@: 记录版块下的总回复数。
-    \* \@post_number_today\@: 记录版块下今日回复数。
+    \* \@thread_number_total\@: 记录版块下的讨论总数。
+    \* \@thread_number_today\@: 记录版块下今日新建讨论数。
+    \* \@viewer_number_total\@: 记录版块下的讨论查看总数（同一用户多次查看同一讨论记一次）。
+    \* \@viewer_number_today\@: 记录版块下今日讨论查看数（同一用户多次查看同一讨论记一次）。
+    \* \@post_number_total\@: 记录版块下的回复总数（同一用户多次回复同一讨论记一次）。
+    \* \@post_number_today\@: 记录版块下今日回复数（同一用户多次回复同一讨论记一次）。
 }
 
 \h5{数据库Schema}
@@ -69,7 +70,8 @@ CREATE TABLE Icons(
 CREATE TABLE Boards(
     BoardsId int NOT NULL IDENTITY,
     Parent int NULL,
-    -- Root boards's Parent is NULL,
+    -- Root boards' Parent is NULL.
+    -- Each root boards is either the parent of the main board or detached boards for special purpose.
     Title nvarchar(64) NOT NULL,
     Description nvarchar(256) NOT NULL,
     Oplist int NOT NULL,
@@ -109,6 +111,8 @@ CREATE TABLE Boards(
 
 CREATE TABLE BoardStats(
     BoardId             int NOT NULL UNIQUE,
+    LastThreadId        int NULL,
+    LastPostId          int NULL,
     PostNumberTotal     int NOT NULL,
     PostNumberToday     int NOT NULL,
     ThreadNumberTotal   int NOT NULL,
@@ -118,10 +122,20 @@ CREATE TABLE BoardStats(
 
     CONSTRAINT PK_BoardId PRIMARY KEY CLUSTERED (BoardId),
     CONSTRAINT FK_BoardId FOREIGN KEY (BoardId)
-        -- BoardCounters and Boards are in an one-to-one relationship.
+        -- BoardStats and Boards are in an one-to-one relationship.
         REFERENCES Boards (BoardId)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
+    CONSTRAINT FK_LastThreadId FOREIGN KEY (LastThreadId)
+        REFERENCES Threads (ThreadId)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION,
+        -- Should update LastThreadId before deleting the thread.
+    CONSTRAINT FK_LastPostId FOREIGN KEY (LastPostId)
+        REFERENCES Posts (PostId)
+        ON UPDATE CASCADE
+        ON DELETE NO ACTION
+        -- Should update LastPostId before deleting the post.
 );
 
 \code+{end}
@@ -139,11 +153,18 @@ SELECT
     i.Path AS IconUrl,
     pb.DefaultBoardOplist,
     b.DefaultPostOplist,
-    b.DefaultThreadOplist
+    b.DefaultThreadOplist,
+    s.LastPostId,
+    s.LastThreadId,
+    s.PostNumberTotal,
+    s.PostNumberToday,
+    s.ThreadNumberTotal,
+    s.ThreadNumberToday,
+    s.ViewerNumberTotal,
+    s.ViewerNumberToday
 FROM Boards AT b
     INNER JOIN Boards as pb         ON pb.BoardsId = b.Parent
     INNER JOIN Icons as i           ON i.IconId = b.IconId
-    INNER JOIN BoardCouters AS c    ON c.BoardId = b.BoardId
     INNER JOIN BoardStats AS s      ON s.BoardId = b.BoardId;
 
 CREATE PROCEDURE getBoardsByParent
@@ -172,6 +193,47 @@ OPTIONS用于获得用户对当前资源的访问方法，通过报头Allow字�
 
 其中，OPTIONS方法一直可用，其他方法根据用户当前的返回。
 
+特定的版块：
+\code+[http]{begin}
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8; api_version=1.0
+Content-Length: XXX
+Cache-control: max-age=2592000, must-revalidate
+Last-Modified: Mon, 06 May 2013 06:12:57 GMT
+Allow: OPTIONS, GET
+\code+{end}
+\code+[json]{begin}
+HTTP/1.1 200 OK
+{
+    "self": "posts/",
+    "source": "posts/",
+    "base": "/resources/",
+    "links": {
+        "parent": {
+            "href": "boards/{parent}",
+            "method": "GET",
+            "description": "上级版块"
+        },
+        "oplist": {
+            "href": "oplists/{oplist}",
+            "method": "GET",
+            "description": "版块的权限"
+        },
+        "default_post_oplist": {
+            "href": "oplists/{default_post_oplist}",
+            "method": "GET",
+            "description": "默认的回复权限"
+        },
+        "default_thread_oplist": {
+            "href": "oplists/{default_thread_oplist}",
+            "method": "GET",
+            "description": "默认的讨论权限"
+        }
+    }
+}
+
+\code+{end}
+
 \h4{获取资源：GET}
 \alert[info]{max-age:days, must-revalidate}
 
@@ -179,19 +241,16 @@ GET方法用于获取资源。
 
 获取特定板块时使用\@/resources/boards/{$id}\@。
 
-返回的JSON格式为：
-
 \code+[json]{begin}
 {
     "boards": {
-        "id": "11"
+        "id": "13"
         ...
     },
     "self": "boards/{id}",
     "source": "boards/{id}",
     "base": "/resources/"
 }
-
 \code+{end}
 
 获取板块列表时使用\@/resources/boards?parent={$parent}\@。
@@ -202,17 +261,25 @@ GET方法用于获取资源。
 {
     "boards": [
         {
-            "id": "11"
+            "id": "13",
             ...
         },
         {
-            "id": "12"
+            "id": "14",
             ...
         },
         ...
     ],
-    "self": "boards?parent=4",
-    "source": "boards",
+    "links": {
+        "tier_one_boards": {
+            "href": "boards/?parent=0",
+            "method": "GET",
+            "description": "一级版块"
+        }
+    },
+    "item": "boards/{id}",
+    "self": "boards/?parent={parent}",
+    "source": "boards/",
     "base": "/resources/"
 }
 

@@ -100,7 +100,8 @@ CREATE TABLE ThreadStats(
     CONSTRAINT FK_LastPost FOREIGN KEY (LastPost)
         REFERENCES Posts (PostId)
         ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON DELETE NO ACTION
+        -- Should update LastPostId before deleting the post.
 );
 
 CREATE TABLE ThreadCounters(
