@@ -57,6 +57,10 @@ class Boards
 
 \h5{数据库Schema}
 
+\fig{begin}
+    \img{pages/graph/erd/boards.png}
+\fig{end}
+
 \code+[sql]{begin}
 
 CREATE TABLE Icons(

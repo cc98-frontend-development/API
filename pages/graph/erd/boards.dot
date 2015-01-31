@@ -1,0 +1,97 @@
+#dot
+strict digraph g {
+	node [ shape = box ];
+	nodesep = 0.1;
+	ranksep = 1;
+	
+	subgraph cluster_post_stat {
+		label = "BoardStat";
+		node_a_board_stat_id                  [ label = "*BoardId*" ];
+		node_a_board_stat_last_thread_id      [ label = "LastThreadId" ];
+		node_a_board_stat_last_post_id        [ label = "LastPostId" ];
+		node_a_board_stat_thread_number_month [ label = "ThreadNumberMonth" ];
+		node_a_board_stat_thread_number_today [ label = "ThreadNumberToday" ];
+		node_a_board_stat_viewer_number_month [ label = "ViewerNumberMonth" ];
+		node_a_board_stat_viewer_number_today [ label = "ViewerNumberToday" ];
+		node_a_board_stat_post_number_month   [ label = "PostNumberMonth" ];
+		node_a_board_stat_post_number_today   [ label = "PostNumberToday" ];
+	}
+
+	subgraph cluster_board {
+		label = "Board (Tier 2)";
+		node_a_board_id                     [ label = "*BoardId*" ];
+		node_a_board_parent                 [ label = "Parent" ];
+		node_a_board_title                  [ label = "Title" ];
+		node_a_board_description            [ label = "Description" ];
+		node_a_board_oplist                 [ label = "Oplist" ];
+		node_a_board_default_thread_oplist  [ label = "DefaultThreadOplist" ];
+		node_a_board_default_post_oplist    [ label = "DefaultPostOplist" ];
+		node_a_board_icon_url               [ label = "-IconUrl-" ];
+	}
+	node_a_board_stat_id -> node_a_board_id;
+	node_a_board_parent -> node_a_board_id_2;
+	node_a_board_oplist -> node_a_oplist_id;
+	node_a_board_default_thread_oplist -> node_a_oplist_id_2 [ label = "a heritage form tier 1" ];
+	node_a_board_default_post_oplist -> node_a_oplist_id_3 [ label = "not a heritage form tier 1" ];
+	node_a_board_stat_last_thread_id -> node_a_thread_id;
+	node_a_board_stat_last_post_id -> node_a_post_id;
+
+	subgraph cluster_board_2 {
+		label = "Board (Tier 1)";
+		node_a_board_id_2                   [ label = "*BoardId*" ];
+		node_a_board_parent_2               [ label = "Parent" ];
+		node_a_board_oplist_2               [ label = "Oplist" ];
+		node_a_board_default_thread_oplist_2[ label = "DefaultThreadOplist" ];
+		node_a_board_default_post_oplist_2  [ label = "DefaultPostOplist" ];
+	}
+	node_a_board_parent_2 -> node_a_board_id_3;
+	node_a_board_default_thread_oplist_2 -> node_a_oplist_id_2;
+	node_a_board_default_post_oplist_2 -> node_a_oplist_id_4;
+
+	subgraph cluster_board_3 {
+		label = "Board (Main, a root board)";
+		node_a_board_id_3                   [ label = "*BoardId*: 0" ];
+		node_a_board_parent_3               [ label = "Parent: NULL" ];
+	}
+
+	subgraph cluster_oplist {
+		label = "Oplist";
+		node_a_oplist_id               [ label = "*OplistId*" ];
+	}
+
+	subgraph cluster_oplist_2 {
+		label = "Oplist";
+		node_a_oplist_id_2               [ label = "*OplistId*" ];
+		node_a_oplist_is_heritage_2      [ label = "IsHeritage: true" ];
+	}
+
+	subgraph cluster_oplist_3 {
+		label = "Oplist";
+		node_a_oplist_id_3               [ label = "*OplistId*" ];
+		node_a_oplist_is_heritage_3      [ label = "IsHeritage: false" ];
+	}
+	
+	subgraph cluster_oplist_4 {
+		label = "Oplist";
+		node_a_oplist_id_4               [ label = "*OplistId*" ];
+	}
+
+	subgraph cluster_thread {
+		label = "Thread";
+		node_a_thread_id     [ label = "*ThreadId*" ];
+		node_a_thread_parent [ label = "Parent" ];
+		node_a_thread_oplist [ label = "Oplist" ];
+	}
+	node_a_thread_oplist -> node_a_oplist_id_2;
+	node_a_thread_parent -> node_a_board_id;
+
+
+	subgraph cluster_post {
+		label = "Post";
+		node_a_post_id     [ label = "*PostId*" ];
+		node_a_post_oplist [ label = "Oplist" ];
+	}
+	node_a_post_oplist -> node_a_oplist_id_3;
+
+
+}

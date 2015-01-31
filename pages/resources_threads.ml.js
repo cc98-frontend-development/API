@@ -47,10 +47,6 @@ class Highlight
     Boolean italic
 \code+{end}
 
-\fig{begin}
-    \img{pages/graph/erd/threads.png}
-\fig{end}
-
 \list*{
     \* \@parent\@，指向上级（板块）
     \* \@default_thread_oplist\@，讨论的默认oplist，储存于\@/resources/boards/{parent}:default_thread_oplist\@
@@ -79,7 +75,10 @@ class Highlight
 
 \h5{数据库Schema}
 
-SQL Server:
+\fig{begin}
+    \img{pages/graph/erd/threads.png}
+\fig{end}
+
 \code+[sql]{begin}
 
 CREATE TABLE ThreadStats(
