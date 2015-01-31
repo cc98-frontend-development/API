@@ -27,11 +27,11 @@ class Boards
     String last_thread_id
     String last_post_id
     # Activity statistics:
-    Number post_number_total
+    Number post_number_month
     Number post_number_today
-    Number thread_number_total
+    Number thread_number_month
     Number thread_number_today
-    Number viewer_number_total
+    Number viewer_number_month
     Number viewer_number_today
 
 \code+{end}
@@ -47,11 +47,11 @@ class Boards
     \* \@icon_url\@，图标的访问地址，图标存于数据库中，地址由后端生成。
     \* \@last_thread_id\@: 记录最新发表讨论id。
     \* \@last_post_id\@: 记录最新发表回复id。
-    \* \@thread_number_total\@: 记录版块下的讨论总数。
-    \* \@thread_number_today\@: 记录版块下今日新建讨论数。
-    \* \@viewer_number_total\@: 记录版块下的讨论查看总数（同一用户多次查看同一讨论记一次）。
+    \* \@thread_number_month\@: 记录版块下过去一月讨论数。
+    \* \@thread_number_today\@: 记录版块下今日讨论数。
+    \* \@viewer_number_month\@: 记录版块下过去一月讨论查看数（同一用户多次查看同一讨论记一次）。
     \* \@viewer_number_today\@: 记录版块下今日讨论查看数（同一用户多次查看同一讨论记一次）。
-    \* \@post_number_total\@: 记录版块下的回复总数（同一用户多次回复同一讨论记一次）。
+    \* \@post_number_month\@: 记录版块下过去一月回复数（同一用户多次回复同一讨论记一次）。
     \* \@post_number_today\@: 记录版块下今日回复数（同一用户多次回复同一讨论记一次）。
 }
 
@@ -113,11 +113,11 @@ CREATE TABLE BoardStats(
     BoardId             int NOT NULL UNIQUE,
     LastThreadId        int NULL,
     LastPostId          int NULL,
-    PostNumberTotal     int NOT NULL,
+    PostNumberMonth     int NOT NULL,
     PostNumberToday     int NOT NULL,
-    ThreadNumberTotal   int NOT NULL,
+    ThreadNumberMonth   int NOT NULL,
     ThreadNumberToday   int NOT NULL,
-    ViewerNumberTotal   int NOT NULL,
+    ViewerNumberMonth   int NOT NULL,
     ViewerNumberToday   int NOT NULL,
 
     CONSTRAINT PK_BoardId PRIMARY KEY CLUSTERED (BoardId),
@@ -156,11 +156,11 @@ SELECT
     b.DefaultThreadOplist,
     s.LastPostId,
     s.LastThreadId,
-    s.PostNumberTotal,
+    s.PostNumberMonth,
     s.PostNumberToday,
-    s.ThreadNumberTotal,
+    s.ThreadNumberMonth,
     s.ThreadNumberToday,
-    s.ViewerNumberTotal,
+    s.ViewerNumberMonth,
     s.ViewerNumberToday
 FROM Boards AT b
     INNER JOIN Boards as pb         ON pb.BoardsId = b.Parent
