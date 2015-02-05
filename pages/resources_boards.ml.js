@@ -288,3 +288,53 @@ GET方法用于获取资源。
 }
 
 \code+{end}
+
+\h4{删除资源：DELETE}
+
+\alert[info]{no-cache, no-store}
+
+删除版块需要向\@/resources/boards/{$id}\@使用DELETE方法，成功回复\@204 No Content\@。
+
+版块下所有讨论，及讨论的所有回复也将因此删除（危险！），需要检查delete权限，版块下所有讨论和所有回复的权限（危险！）。
+
+失败则根据失败原因分别返回。
+
+\h4{修改资源：PUT}
+
+\alert[info]{no-cache, no-store}
+
+向\@/resources/boards/{$id}\@使用PUT方法，JSON格式为：
+
+\code+[json]{begin}
+{
+    "boards": {
+        ...
+    }
+}
+
+\code+{end}
+
+也可以使用上述\@links\@内提供的接口，用过滤器的方式，改变一部分内容。过滤器方式指定的操作将覆盖JSON方式。
+
+可改变的内容为:
+\table{begin}
+\r{
+    \h 属性名
+    \h 类型
+    \h operation
+    \h 描述
+}
+\r{
+    \d \@parent\@
+    \d \@String\@
+    \d \@post($id)\@
+    \d \@/resources/boards/{parent}\@，移动版块为其他版块的子版块，检查parent权限
+}
+\r{
+    \d \@title\@ \@description\@
+    \d \@String\@
+    \d \@title($id)\@ \@describe($id)\@
+    \d 版块名字，简介，必须为纯文本，检查edit权限
+}
+\table{end}
+

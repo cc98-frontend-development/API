@@ -15,8 +15,8 @@ var nav = [
     { link_text: "资源", link_file:"resources.ml.js",
         child:[
         {link_text: "/resources/posts", link_file:"resources_posts.ml.js"},
-        {link_text: "/resources/threads", link_file:"resources_threads.ml.js"}
-//        {link_text: "/resources/boards", link_file:"resources_boards.ml.js"}
+        {link_text: "/resources/threads", link_file:"resources_threads.ml.js"},
+        {link_text: "/resources/boards", link_file:"resources_boards.ml.js"}
         ]
     },
     { link_text: "统计", link_file:"statistics.ml.js",
