@@ -120,6 +120,7 @@ CREATE TABLE UserThreadActions (
 );
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('views', "查看");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('posts', "发表讨论");
+INSERT INTO UserThreadActions (Action, Comment) VALUES ('reparents', "移动讨论");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('edits', "修改讨论(标题，类型）");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('top_changes', "置顶/取消置顶回复");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('good_changes', "改变精华状态");

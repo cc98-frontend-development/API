@@ -622,6 +622,12 @@ links包括了页面间跳转的方法。
     \d 标题，必须为纯文本，检查title权限
 }
 \r{
+    \d \@parent\@
+    \d \@String\@
+    \d \@reparent($parent)\@
+    \d 移动讨论至其他版块，检查reparent权限与目标版块的adopt权限。
+}
+\r{
     \d \@top_type\@
     \d \@String\@
     \d \@top($id, $top_type, $timeout)\@
