@@ -32,12 +32,6 @@ class Post
 
 \code+{end}
 
-\fig{begin}
-
-    \img{pages/graph/erd/posts.png}
-
-\fig{end}
-
 \list*{
     \* \@parent\@，指向上级（讨论）
     \* \@reply_to\@，回复对象（回复），默认为\@/resources/threads/{parent}:first_post\@
@@ -55,6 +49,10 @@ class Post
 }
 
 \h5{数据库Schema}
+
+\fig{begin}
+    \img{pages/graph/erd/posts.png}
+\fig{end}
 
 \code+[sql]{begin}
 
@@ -79,7 +77,7 @@ CREATE TABLE PostStats(
 
     INDEX IDX_Score (Score DESC),
 
-    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId ASC),
+    CONSTRAINT PK_PostId PRIMARY KEY CLUSTERED (PostId),
     CONSTRAINT FK_PostId FOREIGN KEY (PostId)
         -- PostStats and PostCounters are in an one-to-one relationship.
         -- PostCounters and Posts are in an one-to-one relationship.

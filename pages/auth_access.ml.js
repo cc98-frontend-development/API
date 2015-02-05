@@ -142,7 +142,7 @@ Cache-control: no-cache, no-store
 
 \code+[json]{begin}
 { "error":[{
-    "type": "access forbidden",
+    "error_type": "access forbidden",
     "message": "您无权访问资源{id}",
     "info":{"href":"{page}" }
     }]
