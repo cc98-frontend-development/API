@@ -24,7 +24,7 @@ grant_type=password&username=johndoe&password=A3ddj3w&scope=api.cc98.org&client_
 
 服务器端需要
 \list#{
-    \* 是否满足限速条件（防止暴力破解密码），具体参考\link+[限速]{#/ratelimit.ml.js}
+    \* 是否满足限速条件（防止暴力破解密码），具体参考\link+[限速]{#/basic_ratelimit.ml.js}
     \* 验证client credentials，即\@client_id\@和\@client_secret\@是否合格
     \* 验证resource owner credentials，即\@username\@和\@password\@是否正确
 }
@@ -102,7 +102,7 @@ Authorization: Bearer 2YotnFZFEjr1zCsicMWpAA
 
 服务器需要验证
 \list#{
-    \* 是否满足限速条件（防止脚本恶意刷贴），具体参考\link+[限速]{#/ratelimit.ml.js}
+    \* 是否满足限速条件（防止脚本恶意刷贴），具体参考\link+[限速]{#/basic_ratelimit.ml.js}
     \* 验证access token是否正确，如果不正确，应引导用户重新登录；如果access token过期，应引导客户端刷新access token，参考\link+[refresh token]{#/auth_refresh.ml.js}
     \* 访问的scope是否在授权内
 }

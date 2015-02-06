@@ -45,7 +45,7 @@ grant_type=refresh_token&refresh_token=tGzv3JOkF0XG5Qx2TlKWIA&scope=api.cc98.org
 
 服务器端需要
 \list#{
-    \* 是否满足限速条件，具体参考\link+[限速]{#/ratelimit.ml.js}
+    \* 是否满足限速条件，具体参考\link+[限速]{#/basic_ratelimit.ml.js}
     \* 验证client credentials，即\@client_id\@和\@client_secret\@是否合格
     \* 验证refresh_token，是否正确，其对应的access token是否过期
     \* 如果过期，发放新的access token，和新的refresh token；否则回复原有的aceess token，但重新计算过期时间。

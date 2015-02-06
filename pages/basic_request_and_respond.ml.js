@@ -21,7 +21,7 @@ API回复的\@Content-Type\@\emphasis{必须}为\@Content-Type: application/json
 
 \h6{限速}
 
-任何请求都\emphasis{必须}通过服务器段限速的要求，如果不符合限速要求的，返回\@429 Too Many Request\@，具体参考\link+[限速]{#/ratelimit.ml.js}#TODO。
+任何请求都\emphasis{必须}通过服务器段限速的要求，如果不符合限速要求的，返回\@429 Too Many Request\@，具体参考\link+[限速]{#/basic_ratelimit.ml.js}。
 
 \h6{授权}
 
@@ -38,7 +38,7 @@ API回复的\@Content-Type\@\emphasis{必须}为\@Content-Type: application/json
     \* 缓存策略\@Cache-control\@。
     \* validator，与缓存的验证有关的信息\@Last-Modified\@、\@ETag\@。
     \* \@Date\@，永远帮助客户端正确处理缓存。
-    \* 限速状态：\@X-Ratelimit-Limit\@和\@X-Ratelimit-Remaining\@。
+    \* 限速状态：\@X-Ratelimit-Base\@ \@X-Ratelimit-Burst\@ \@X-Ratelimit-Count\@ \@X-Ratelimit-Refresh\@。
 }
 \h6{HTTP 状态码}
 
@@ -144,7 +144,7 @@ HTTP 状态码在\link+[RFC2612的第10节]{http://www.w3.org/Protocols/rfc2616/
 \r{
 
 	\d \@429 Too Many Request\@
-	\d 请求过于频繁，超过超过服务器的限速要求。具体参考：\link+[限速]{#/ratelimit.ml.js}。
+	\d 请求过于频繁，超过超过服务器的限速要求。具体参考：\link+[限速]{#/basic_ratelimit.ml.js}。
 }
 \r{
 
