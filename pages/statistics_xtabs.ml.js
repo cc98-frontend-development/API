@@ -95,7 +95,7 @@ CREATE TABLE UsersXThreads(
     LastTime datatime NOT NULL, -- The time the action is performed most recently.
 
     INDEX IDX_UserId (UserId),
-    INDEX IDX_PostId (PostId),
+    INDEX IDX_ThreadId (ThreadId),
     INDEX IDX_Action (Action),
     INDEX IDX_LastTime (LastTime DESC),
 
@@ -120,8 +120,8 @@ CREATE TABLE UserThreadActions (
 );
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('views', "查看");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('posts', "发表讨论");
-INSERT INTO UserThreadActions (Action, Comment) VALUES ('reparents', "移动讨论");
-INSERT INTO UserThreadActions (Action, Comment) VALUES ('edits', "修改讨论(标题，类型）");
+INSERT INTO UserThreadActions (Action, Comment) VALUES ('moves', "移动讨论");
+INSERT INTO UserThreadActions (Action, Comment) VALUES ('edits', "修改讨论（标题，类型）");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('top_changes', "置顶/取消置顶回复");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('good_changes', "改变精华状态");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('no_post_changes', "允许/关闭回复");
@@ -148,4 +148,48 @@ WHERE ThreadId = 8481;
 SELECT TOP (1) UserId, ThreadId FROM UsersXThreads
 WHERE Action = 'views' ORDER BY (LastTime DESC);
 
+\code+{end}
+
+\h4{版块关联表}
+
+暂时不提供访问API，只提供少量根据关联表统计的结果。
+
+\h5{数据库Schema}
+
+\code+[sql]{begin}
+
+CREATE TABLE UsersXBoards(
+    UserId   int NOT NULL,
+    BoardId  int NOT NULL,
+    Action   int NOT NULL,
+    LastTime datatime NOT NULL, -- The time the action is performed most recently.
+
+    INDEX IDX_UserId (UserId),
+    INDEX IDX_BoardId (BoardId),
+    INDEX IDX_Action (Action),
+    INDEX IDX_LastTime (LastTime DESC),
+
+    CONSTRAINT PK_UsersXBoards PRIMARY KEY CLUSTERED (UserId, BoardId, Action),
+    CONSTRAINT FK_UserId FOREIGN KEY (UserId)
+        REFERENCES Users (UsersId),
+        ON UPDATE CASCADE,
+        ON DELETE CASCADE, -- When deleting a user, deletes all its records.
+    CONSTRAINT FK_BoardId FOREIGN KEY (BoardId)
+        REFERENCES Boards (BoardId),
+        ON UPDATE CASCADE,
+        ON DELETE CASCADE, -- When deleting a board, deletes all its records.
+    CONSTRAINT FK_Action FOREIGN KEY (Action)
+        REFERENCES UserBoardActions (Action),
+        ON UPDATE CASCADE,
+        ON DELETE NO ACTION -- Can not delete action in use.
+);
+
+CREATE TABLE UserBoardActions (
+    Action  nvarchar(32) NOT NULL PRIMARY KEY NONCLUSTERED,
+    Comment nvarchar(96) NULL
+);
+INSERT INTO UserBoardActions (Action, Comment) VALUES ('views', "查看");
+INSERT INTO UserBoardActions (Action, Comment) VALUES ('posts', "新建版块");
+INSERT INTO UserBoardActions (Action, Comment) VALUES ('moves', "移动版块");
+INSERT INTO UserBoardActions (Action, Comment) VALUES ('edits', "修改版块（标题，描述）");
 \code+{end}

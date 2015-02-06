@@ -289,6 +289,57 @@ GET方法用于获取资源。
 
 \code+{end}
 
+\h4{新建资源：POST}
+
+\alert[info]{no-cache, no-store}
+
+新建讨论通过向\@/resources/boards\@使用POST方法，发送如下格式的JSON：
+\code+[json]{begin}
+{
+    "boards": {
+        "title": { ... },
+        ...
+    }
+}
+\code+{end}
+
+如果向\@/resources/boards/?parent={$parent}\@使用POST方法，表示向\@$parent\@版块中新建版块，等同于指定了\@parent\@项目，下述的\@parent\@项将被忽略。
+
+其中可以提供以下属性：
+\table{begin}
+\r{
+    \h 属性名
+    \h 类型
+    \h 必需
+    \h 描述
+}
+\r{
+    \d \@parent\@
+    \d \@String\@
+    \d yes，可用\@?parent={$parent}\@过滤器指定
+    \d \@/resources/boards/{parent}\@，所在板块id，根据\@{parent}\@检查上级（板块）的\@post_board\@权限
+}
+\r{
+    \d \@title\@
+    \d \@String\@
+    \d yes
+    \d 版块标题，必须为纯文本
+}
+\r{
+    \d \@description\@
+    \d \@String\@
+    \d yes
+    \d 版块描述，必须为纯文本
+}
+\r{
+    \d \@icon_url\@
+    \d \@String\@
+    \d yes
+    \d 版块图标URL
+}
+
+\table{end}
+
 \h4{删除资源：DELETE}
 
 \alert[info]{no-cache, no-store}
@@ -327,8 +378,8 @@ GET方法用于获取资源。
 \r{
     \d \@parent\@
     \d \@String\@
-    \d \@reparent($parent)\@
-    \d 移动版块为其他版块的子版块，检查reparent权限和目标版块的adopt权限
+    \d \@move($parent)\@
+    \d 移动版块为其他版块的子版块，检查move权限和目标版块的adopt权限
 }
 \r{
     \d \@title\@ \@description\@
