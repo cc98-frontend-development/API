@@ -327,8 +327,8 @@ GET方法用于获取资源。
 \r{
     \d \@parent\@
     \d \@String\@
-    \d \@reparent($parent)\@
-    \d 移动版块为其他版块的子版块，检查reparent权限和目标版块的adopt权限
+    \d \@move($parent)\@
+    \d 移动版块为其他版块的子版块，检查move权限和目标版块的adopt权限
 }
 \r{
     \d \@title\@ \@description\@

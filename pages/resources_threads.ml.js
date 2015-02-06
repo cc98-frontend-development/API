@@ -624,8 +624,8 @@ links包括了页面间跳转的方法。
 \r{
     \d \@parent\@
     \d \@String\@
-    \d \@reparent($parent)\@
-    \d 移动讨论至其他版块，检查reparent权限与目标版块的adopt权限。
+    \d \@move($parent)\@
+    \d 移动讨论至其他版块，检查move权限与目标版块的adopt权限。
 }
 \r{
     \d \@top_type\@
