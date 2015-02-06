@@ -95,7 +95,7 @@ CREATE TABLE UsersXThreads(
     LastTime datatime NOT NULL, -- The time the action is performed most recently.
 
     INDEX IDX_UserId (UserId),
-    INDEX IDX_PostId (PostId),
+    INDEX IDX_ThreadId (ThreadId),
     INDEX IDX_Action (Action),
     INDEX IDX_LastTime (LastTime DESC),
 
@@ -121,7 +121,7 @@ CREATE TABLE UserThreadActions (
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('views', "查看");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('posts', "发表讨论");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('moves', "移动讨论");
-INSERT INTO UserThreadActions (Action, Comment) VALUES ('edits', "修改讨论(标题，类型）");
+INSERT INTO UserThreadActions (Action, Comment) VALUES ('edits', "修改讨论（标题，类型）");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('top_changes', "置顶/取消置顶回复");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('good_changes', "改变精华状态");
 INSERT INTO UserThreadActions (Action, Comment) VALUES ('no_post_changes', "允许/关闭回复");
