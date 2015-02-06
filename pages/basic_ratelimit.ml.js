@@ -48,20 +48,20 @@ Epoch seconds很容易变成常用的日期格式，如Javascript中：
 \code+[sql]{begin}
 
 CREATE TABLE RateLimit(
-	UserId   int not NULL,
-	Ip       nvarchar(64) NOT NULL,
-	Base     int not NULL,
-	Burst    int not NULL,
-	Count    int not NULL,
-	Refresh  datetime not NULL,
+    UserId   int not NULL,
+    Ip       nvarchar(64) NOT NULL,
+    Base     int not NULL,
+    Burst    int not NULL,
+    Count    int not NULL,
+    Refresh  datetime not NULL,
 
-	INDEX IDX_Count (Count),
+    INDEX IDX_Count (Count),
 
     CONSTRAINT PK_RateLimit PRIMARY KEY CLUSTERED (UserId, Ip),
-	CONSTRAINT FK_UserId FOREIGN KEY (UserId)
-		REFERENCES Users (UserId)
-		ON UPDATE CASCADE
-		ON DELETE CASCADE
+    CONSTRAINT FK_UserId FOREIGN KEY (UserId)
+        REFERENCES Users (UserId)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 \code+{end}
