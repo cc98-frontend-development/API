@@ -149,3 +149,47 @@ SELECT TOP (1) UserId, ThreadId FROM UsersXThreads
 WHERE Action = 'views' ORDER BY (LastTime DESC);
 
 \code+{end}
+
+\h4{版块关联表}
+
+暂时不提供访问API，只提供少量根据关联表统计的结果。
+
+\h5{数据库Schema}
+
+\code+[sql]{begin}
+
+CREATE TABLE UsersXBoards(
+    UserId   int NOT NULL,
+    BoardId  int NOT NULL,
+    Action   int NOT NULL,
+    LastTime datatime NOT NULL, -- The time the action is performed most recently.
+
+    INDEX IDX_UserId (UserId),
+    INDEX IDX_BoardId (BoardId),
+    INDEX IDX_Action (Action),
+    INDEX IDX_LastTime (LastTime DESC),
+
+    CONSTRAINT PK_UsersXBoards PRIMARY KEY CLUSTERED (UserId, BoardId, Action),
+    CONSTRAINT FK_UserId FOREIGN KEY (UserId)
+        REFERENCES Users (UsersId),
+        ON UPDATE CASCADE,
+        ON DELETE CASCADE, -- When deleting a user, deletes all its records.
+    CONSTRAINT FK_BoardId FOREIGN KEY (BoardId)
+        REFERENCES Boards (BoardId),
+        ON UPDATE CASCADE,
+        ON DELETE CASCADE, -- When deleting a board, deletes all its records.
+    CONSTRAINT FK_Action FOREIGN KEY (Action)
+        REFERENCES UserBoardActions (Action),
+        ON UPDATE CASCADE,
+        ON DELETE NO ACTION -- Can not delete action in use.
+);
+
+CREATE TABLE UserBoardActions (
+    Action  nvarchar(32) NOT NULL PRIMARY KEY NONCLUSTERED,
+    Comment nvarchar(96) NULL
+);
+INSERT INTO UserBoardActions (Action, Comment) VALUES ('views', "查看");
+INSERT INTO UserBoardActions (Action, Comment) VALUES ('posts', "新建版块");
+INSERT INTO UserBoardActions (Action, Comment) VALUES ('moves', "移动版块");
+INSERT INTO UserBoardActions (Action, Comment) VALUES ('edits', "修改版块（标题，描述）");
+\code+{end}
